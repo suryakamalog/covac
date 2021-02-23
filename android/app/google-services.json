@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "466257082162",
+    "project_id": "covac-e9bca",
+    "storage_bucket": "covac-e9bca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:466257082162:android:e872564e2866c869bb892b",
+        "android_client_info": {
+          "package_name": "com.example.covac"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "466257082162-14fff2hve7r9cg5a9ffr5kmnech82dk0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.covac",
+            "certificate_hash": "ccd4da783f32b0648b63fbbb37ebd39e37630a50"
+          }
+        },
+        {
+          "client_id": "466257082162-jpabmardt1nndnncabl1aaqomavbb9jm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUilXWVaphNjljEx_NB25TdcVgTx5BakU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "466257082162-jpabmardt1nndnncabl1aaqomavbb9jm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -39,6 +39,12 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
     print('Gender :${formVal.gender}');
     print('DOB :$_date');
     print('Address :${addressController.text}');
+    FirebaseFirestore.instance.collection("users").doc(widget.uid).set({
+      "name": "${nameController.text}",
+      "fatherName": "${fathersnameController.text}",
+      "uid": "${widget.uid}",
+      "role": "public"
+    });
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -280,9 +286,8 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
                               onPressed: () {
                                 DatePicker.showDatePicker(context,
                                     showTitleActions: true,
-                                    minTime: DateTime(2020, 1, 1),
-                                    maxTime: DateTime(2030, 1, 1),
-                                    onChanged: (date) {
+                                    minTime: DateTime(1980, 1, 1),
+                                    maxTime: DateTime.now(), onChanged: (date) {
                                   // print('change $date');
                                 }, onConfirm: (date) {
                                   print('confirm $date');

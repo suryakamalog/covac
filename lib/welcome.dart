@@ -39,6 +39,7 @@ class _WelcomeState extends State<Welcome> {
             ),
             SizedBox(height: size.height * 0.05),
             RoundedInputField(
+              inputType: TextInputType.number,
               hintText: "Enter Phone Number",
               onChanged: (value) {
                 setState(() {

@@ -1,10 +1,12 @@
 import 'package:covac/loginAndSignup/fillDetails_Aadhar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../UserDashboard.dart';
 import '../dashboard.dart';
 import '../components/numeric_pad.dart';
 import '../utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VerifyPhone extends StatefulWidget {
   final String phoneNumber;
@@ -57,7 +59,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                 context,
                 MaterialPageRoute(
                   builder: (context) {
-                    return Dashboard();
+                    return UserDashboard(value.user);
                   },
                 ),
               );
@@ -86,7 +88,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
       } else if (currentUser != null && isVerified == 1) {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => Dashboard()),
+            MaterialPageRoute(builder: (context) => UserDashboard(currentUser)),
             (route) => false);
       } else
         _scaffoldkey.currentState
@@ -129,7 +131,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
-                        return Dashboard();
+                        return UserDashboard(value.user);
                       },
                     ),
                   );
@@ -137,6 +139,12 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                 print("user not found");
                 _scaffoldkey.currentState
                     .showSnackBar(SnackBar(content: Text('User Not Found')));
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => FillDetailsAadhar(
+                            widget.phoneNumber, value.user.uid)),
+                    (route) => false);
               }
             }
           });
@@ -238,7 +246,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "Didn't recieve code? ",
+                          "Didn't receive code? ",
                           style: TextStyle(
                             fontSize: 18,
                             color: Color(0xFF818181),
@@ -325,7 +333,9 @@ class _VerifyPhoneState extends State<VerifyPhone> {
 
   Widget buildCodeNumberBox(String codeNumber) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.symmetric(
+        horizontal: 7,
+      ),
       child: SizedBox(
         width: 45,
         height: 45,

@@ -2,6 +2,7 @@ import 'package:covac/components/rounded_input_field.dart';
 import 'package:covac/components/text_field_container.dart';
 import 'package:covac/dashboard.dart';
 import 'package:covac/utils/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,6 +10,8 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'dart:ui';
 import 'package:covac/models/aadharForm.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../UserDashboard.dart';
 
 class FillDetailsCovidGov extends StatefulWidget {
   final dynamic uid;
@@ -21,27 +24,23 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
   final GlobalKey<FormState> _formKeyValue = new GlobalKey<FormState>();
   var selectedType;
   int selectedRadio;
-  String _date = "2000-01-01";
-  List<String> _genderItems = <String>[
-    'Male',
-    'Female',
-    'Others',
-  ];
-  TextEditingController nameController = TextEditingController();
-  TextEditingController fathersnameController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
+  TextEditingController rtpcrController = TextEditingController();
+  TextEditingController drugAllergyController = TextEditingController();
   AadharFormVal formVal = new AadharFormVal();
   pressed() {
     print('Do form validation here');
-    print('Name :${nameController.text}');
-    print('Father\'s name :${fathersnameController.text}');
+    print('RTPCR ID :${rtpcrController.text}');
+    print('Drug Allergies :${drugAllergyController.text}');
+    print('Affected with COVID: ');
+    selectedRadio == 1 ? print("Yes") : print("No");
     print('Gender :${formVal.gender}');
-    print('DOB :$_date');
-    print('Address :${addressController.text}');
 
     try {
       FirebaseFirestore.instance.collection("users").doc(widget.uid).update({
         "isVerified": 1,
+        "isCovidAffected": selectedRadio == 1 ? 1 : 0,
+        "RTPCR-ID": "${rtpcrController.text}",
+        "drugAllergies": "${drugAllergyController.text}",
       });
     } catch (e) {
       print(e.toString());
@@ -50,7 +49,7 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
       context,
       MaterialPageRoute(
         builder: (context) {
-          return Dashboard();
+          return UserDashboard(FirebaseAuth.instance.currentUser);
         },
       ),
     );
@@ -71,21 +70,6 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime selectedDate = DateTime.now();
-    Future<void> _selectDate(BuildContext context) async {
-      DateTime selectedDate = DateTime.now();
-
-      final DateTime picked = await showDatePicker(
-          context: context,
-          initialDate: selectedDate,
-          firstDate: DateTime(2020, 1),
-          lastDate: DateTime(2120));
-      if (picked != null && picked != selectedDate)
-        setState(() {
-          selectedDate = picked;
-        });
-    }
-
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
@@ -203,7 +187,7 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
                               border: InputBorder.none,
                             ),
                             keyboardType: TextInputType.name,
-                            controller: nameController,
+                            controller: rtpcrController,
 
                             onSaved: (val) => formVal.name = val,
                           ),
@@ -234,7 +218,7 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
                               border: InputBorder.none,
                             ),
                             keyboardType: TextInputType.name,
-                            controller: fathersnameController,
+                            controller: drugAllergyController,
 
                             onSaved: (val) => formVal.fathersname = val,
                           ),

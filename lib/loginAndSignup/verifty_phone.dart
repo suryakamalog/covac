@@ -1,7 +1,8 @@
 import 'package:covac/loginAndSignup/fillDetails_Aadhar.dart';
+import 'package:covac/workerView/workerDashboard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../UserDashboard.dart';
+import '../userView/UserDashboard.dart';
 import '../dashboard.dart';
 import '../components/numeric_pad.dart';
 import '../utils/constants.dart';
@@ -23,7 +24,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
   String _verificationCode;
   String code = "";
   User currentUser;
-  dynamic isVerified;
+  dynamic isVerified, role;
   Future<void> _submit() async {
     print("IN SUBMIT");
     try {
@@ -47,22 +48,41 @@ class _VerifyPhoneState extends State<VerifyPhone> {
               isVerified = ds.data()['isVerified'];
             });
             print("is this user verified ? " + '$isVerified');
-            if (isVerified == 0)
+            if (!isVerified)
               Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
                       builder: (context) => FillDetailsAadhar(
                           widget.phoneNumber, value.user.uid)),
                   (route) => false);
-            else if (isVerified == 1)
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return UserDashboard(value.user);
-                  },
-                ),
-              );
+            else if (isVerified) {
+              await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc("${value.user.uid}")
+                  .get()
+                  .then((DocumentSnapshot ds) async {
+                role = ds.data()['role'];
+              });
+              if (role == "public")
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return UserDashboard(value.user);
+                    },
+                  ),
+                );
+              else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return WorkerDashboard(value.user);
+                    },
+                  ),
+                );
+              }
+            }
           } catch (e) {
             print("user not found");
             Navigator.pushAndRemoveUntil(
@@ -78,18 +98,35 @@ class _VerifyPhoneState extends State<VerifyPhone> {
       print(e);
       print("failed");
       // print(currentUser.uid);
-      if (currentUser != null && isVerified == 0) {
+      if (currentUser != null && !isVerified) {
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
                 builder: (context) =>
                     FillDetailsAadhar(widget.phoneNumber, currentUser.uid)),
             (route) => false);
-      } else if (currentUser != null && isVerified == 1) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => UserDashboard(currentUser)),
-            (route) => false);
+      } else if (currentUser != null && isVerified) {
+        await FirebaseFirestore.instance
+            .collection("users")
+            .doc("${currentUser.uid}")
+            .get()
+            .then((DocumentSnapshot ds) async {
+          role = ds.data()['role'];
+        });
+
+        if (role == "public") {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UserDashboard(currentUser)),
+              (route) => false);
+        } else {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => WorkerDashboard(currentUser)),
+              (route) => false);
+        }
       } else
         _scaffoldkey.currentState
             .showSnackBar(SnackBar(content: Text('Invalid OTP')));
@@ -119,14 +156,22 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                   isVerified = ds.data()['isVerified'];
                 });
                 print("is this user verified ? " + '$isVerified');
-                if (isVerified == 0)
+                if (!isVerified)
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
                           builder: (context) => FillDetailsAadhar(
                               widget.phoneNumber, value.user.uid)),
                       (route) => false);
-                else if (isVerified == 1)
+                else if (isVerified)
+                  await FirebaseFirestore.instance
+                      .collection("users")
+                      .doc("${value.user.uid}")
+                      .get()
+                      .then((DocumentSnapshot ds) async {
+                    role = ds.data()['role'];
+                  });
+                if (role == "public")
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -135,6 +180,16 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                       },
                     ),
                   );
+                else {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return WorkerDashboard(value.user);
+                      },
+                    ),
+                  );
+                }
               } catch (e) {
                 print("user not found");
                 _scaffoldkey.currentState

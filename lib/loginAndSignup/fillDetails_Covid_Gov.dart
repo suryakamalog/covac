@@ -11,7 +11,7 @@ import 'dart:ui';
 import 'package:covac/models/aadharForm.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../UserDashboard.dart';
+import '../userView/UserDashboard.dart';
 
 class FillDetailsCovidGov extends StatefulWidget {
   final dynamic uid;
@@ -37,8 +37,8 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
 
     try {
       FirebaseFirestore.instance.collection("users").doc(widget.uid).update({
-        "isVerified": 1,
-        "isCovidAffected": selectedRadio == 1 ? 1 : 0,
+        "isVerified": true,
+        "isCovidAffected": selectedRadio == 1 ? true : false,
         "RTPCR-ID": "${rtpcrController.text}",
         "drugAllergies": "${drugAllergyController.text}",
       });

@@ -39,11 +39,15 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
     print('Gender :${formVal.gender}');
     print('DOB :$_date');
     print('Address :${addressController.text}');
+
     FirebaseFirestore.instance.collection("users").doc(widget.uid).set({
       "name": "${nameController.text}",
       "fatherName": "${fathersnameController.text}",
+      "gender": "${formVal.gender}",
+      "DOB": "$_date",
       "uid": "${widget.uid}",
-      "role": "public"
+      "role": "public",
+      "address": "${addressController.text}"
     });
     Navigator.push(
       context,

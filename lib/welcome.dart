@@ -15,72 +15,79 @@ class Welcome extends StatefulWidget {
 }
 
 class _WelcomeState extends State<Welcome> {
+  final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
   String phoneNumber = "";
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Container(
-      height: size.height,
-      width: double.infinity,
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(height: size.height * 0.05),
-            Text(
-              "WELCOME TO COVAC",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: size.height * 0.05),
-            SvgPicture.asset(
-              "assets/vaccine.svg",
-              height: size.height * 0.3,
-            ),
-            SizedBox(height: size.height * 0.05),
-            RoundedInputField(
-              inputType: TextInputType.number,
-              hintText: "Enter Phone Number",
-              onChanged: (value) {
-                setState(() {
-                  phoneNumber = value;
-                  print(phoneNumber);
-                });
-              },
-            ),
-            // RoundedPasswordField(
-            //   onChanged: (value) {},
-            // ),
-            RoundedButton(
-              text: "LOGIN",
-              press: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return VerifyPhone(phoneNumber: phoneNumber);
-                    },
-                  ),
-                );
-              },
-            ),
-            // SizedBox(height: size.height * 0.03),
-            RoundedButton(
-              text: "SIGN UP",
-              color: kPrimaryLightColor,
-              textColor: Colors.black,
-              press: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return ContinueWithPhone();
-                    },
-                  ),
-                );
-              },
-            ),
-          ],
+    return Scaffold(
+      key: _scaffoldkey,
+      body: Container(
+        height: size.height,
+        width: double.infinity,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(height: size.height * 0.05),
+              Text(
+                "WELCOME TO COVAC",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: size.height * 0.05),
+              SvgPicture.asset(
+                "assets/vaccine.svg",
+                height: size.height * 0.3,
+              ),
+              SizedBox(height: size.height * 0.05),
+              RoundedInputField(
+                inputType: TextInputType.number,
+                hintText: "Enter Phone Number",
+                onChanged: (value) {
+                  setState(() {
+                    phoneNumber = value.toString();
+                  });
+                },
+              ),
+              // RoundedPasswordField(
+              //   onChanged: (value) {},
+              // ),
+              RoundedButton(
+                text: "LOGIN",
+                press: () {
+                  if (phoneNumber.length == 10)
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return VerifyPhone(phoneNumber: phoneNumber);
+                        },
+                      ),
+                    );
+                  else
+                    _scaffoldkey.currentState.showSnackBar(
+                        SnackBar(content: Text('Invalid Phone Number')));
+                },
+              ),
+              // SizedBox(height: size.height * 0.03),
+              RoundedButton(
+                text: "SIGN UP",
+                color: kPrimaryLightColor,
+                textColor: Colors.black,
+                press: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return ContinueWithPhone();
+                      },
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

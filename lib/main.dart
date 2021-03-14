@@ -5,8 +5,6 @@ import 'welcome.dart';
 import 'utils/constants.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dashboard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 var loggedIn, userID;
@@ -14,7 +12,7 @@ dynamic role;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  dynamic user = FirebaseAuth.instance.currentUser;
+  User user = FirebaseAuth.instance.currentUser;
   if (user != null) {
     await FirebaseFirestore.instance
         .collection("users")

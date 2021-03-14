@@ -258,7 +258,8 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
                                 value: selectedType,
                                 hint: Text(
                                   'Gender',
-                                  style: TextStyle(color: Color(0xff9e58b1)),
+                                  style: TextStyle(
+                                      color: Colors.black.withOpacity(0.5)),
                                 ),
                               ),
                             ),
@@ -278,15 +279,17 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
                               Icons.date_range,
                               color: kPrimaryColor,
                             ),
-                            FlatButton(
+                            TextButton(
                               // splashColor: Colors.white10,
                               child: Align(
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                  '$_date',
+                                  'DOB: $_date',
                                 ),
                               ),
-                              color: Colors.white.withOpacity(0.0),
+                              style: TextButton.styleFrom(
+                                primary: Colors.black.withOpacity(0.5),
+                              ),
                               onPressed: () {
                                 DatePicker.showDatePicker(context,
                                     showTitleActions: true,
@@ -309,6 +312,7 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
 
                                     _date = day + '-' + month + '-' + year;
                                     formVal.dob = _date;
+                                    print(_date);
                                   });
                                 },
                                     currentTime: DateTime.now(),
@@ -358,10 +362,13 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
                           width: size.width * 0.8,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(29),
-                            child: FlatButton(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 20, horizontal: 40),
-                              color: kPrimaryColor,
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                primary: Colors.white,
+                                backgroundColor: kPrimaryColor,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 20, horizontal: 40),
+                              ),
                               onPressed: () {
                                 pressed();
                               },

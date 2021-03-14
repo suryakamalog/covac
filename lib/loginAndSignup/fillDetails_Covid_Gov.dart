@@ -33,7 +33,6 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
     print('Drug Allergies :${drugAllergyController.text}');
     print('Affected with COVID: ');
     selectedRadio == 1 ? print("Yes") : print("No");
-    print('Gender :${formVal.gender}');
 
     try {
       FirebaseFirestore.instance.collection("users").doc(widget.uid).update({
@@ -235,10 +234,13 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
                           width: size.width * 0.8,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(29),
-                            child: FlatButton(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 20, horizontal: 40),
-                              color: kPrimaryColor,
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                primary: Colors.white,
+                                backgroundColor: kPrimaryColor,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 20, horizontal: 40),
+                              ),
                               onPressed: () {
                                 pressed();
                               },

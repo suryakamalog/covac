@@ -1,31 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:covac/components/userDetailCard.dart';
 import 'package:covac/utils/constants.dart';
-import 'package:covac/workerView/vaccinatedUsers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 import '../main.dart';
+import 'finishVaccinationProcess.dart';
 
 const textStyle = TextStyle(
   fontSize: 16,
 );
 
-class WorkerDashboard extends StatefulWidget {
-  final User user;
-  WorkerDashboard(this.user);
+class VaccinatedUsersList extends StatefulWidget {
   @override
-  _WorkerDashboardState createState() => _WorkerDashboardState();
+  _VaccinatedUsersListState createState() => _VaccinatedUsersListState();
 }
 
-class _WorkerDashboardState extends State<WorkerDashboard> {
+class _VaccinatedUsersListState extends State<VaccinatedUsersList> {
   @override
   Widget build(BuildContext context) {
-    print("Inside worker dashboard");
     return Scaffold(
       body: Row(children: <Widget>[
         Expanded(
           child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection("users").snapshots(),
+            stream: FirebaseFirestore.instance
+                .collection("vaccinatedUsers")
+                .snapshots(),
             builder: (BuildContext context,
                 AsyncSnapshot<QuerySnapshot> querySnapshot) {
               if (querySnapshot.hasError) return Text("Some Error");
@@ -41,18 +41,20 @@ class _WorkerDashboardState extends State<WorkerDashboard> {
                     // } else
                     // return ListTile(title: Text(list[index]["name"]));
                     return GestureDetector(
-                      onTap: () {
-                        print("Tapped");
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return UserDetailCard(list[index]);
-                              ;
+                      onTap: list[index]["isVaccinated"]
+                          ? null
+                          : () {
+                              print("Tapped");
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return FinishVaccinationProcess();
+                                    ;
+                                  },
+                                ),
+                              );
                             },
-                          ),
-                        );
-                      },
                       child: Card(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
@@ -64,23 +66,23 @@ class _WorkerDashboardState extends State<WorkerDashboard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                'Name: ${list[index]["name"]}',
+                                'User Name: ${list[index]["userName"]}',
                                 style: textStyle,
                               ),
                               Text(
-                                'Father\'s Name: ${list[index]["fatherName"]}',
+                                'Worker Name: ${list[index]["workerName"]}',
                                 style: textStyle,
                               ),
                               Text(
-                                'Gender: ${list[index]["gender"]}',
-                                style: textStyle,
-                              ),
-                              Text(
-                                'DOB: ${list[index]["DOB"]}',
+                                'Date: ${list[index]["date"]}',
                                 style: textStyle,
                               ),
                               Text(
                                 'Address: ${list[index]["address"]}',
+                                style: textStyle,
+                              ),
+                              Text(
+                                'isVaccinated: ${list[index]["isVaccinated"]}',
                                 style: textStyle,
                               ),
                               SizedBox(
@@ -102,7 +104,7 @@ class _WorkerDashboardState extends State<WorkerDashboard> {
       ]),
       appBar: AppBar(
         title: Text(
-          "Worker Dashboard",
+          "Vaccinated Users",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -129,76 +131,6 @@ class _WorkerDashboardState extends State<WorkerDashboard> {
         elevation: 0,
         centerTitle: true,
         textTheme: Theme.of(context).textTheme,
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            Container(
-              height: 90.0,
-              child: DrawerHeader(
-                child: Text('COVAC', style: TextStyle(color: Colors.white)),
-                decoration: BoxDecoration(
-                  color: kPrimaryColor,
-                ),
-              ),
-            ),
-            ListTile(
-              title: Text('Profile'),
-              onTap: () {
-                print(widget.user);
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('COVID-19 Details'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Vaccinated Users'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return VaccinatedUsersList();
-                    },
-                  ),
-                );
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                // Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('Chat'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              title: Text('FAQs'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
       ),
     );
   }

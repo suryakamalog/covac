@@ -1,6 +1,7 @@
 import 'package:covac/components/rounded_input_field.dart';
 import 'package:covac/components/text_field_container.dart';
 import 'package:covac/dashboard.dart';
+import 'package:covac/loginAndSignup/userVerification.dart';
 import 'package:covac/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,8 @@ import '../userView/UserDashboard.dart';
 
 class FillDetailsCovidGov extends StatefulWidget {
   final dynamic uid;
-  FillDetailsCovidGov(this.uid);
+  final String uidai;
+  FillDetailsCovidGov(this.uidai, this.uid);
   @override
   _FillDetailsCovidGovState createState() => _FillDetailsCovidGovState();
 }
@@ -36,7 +38,7 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
 
     try {
       FirebaseFirestore.instance.collection("users").doc(widget.uid).update({
-        "isVerified": true,
+        // "isVerified": true,
         "isCovidAffected": selectedRadio == 1 ? true : false,
         "RTPCR-ID": "${rtpcrController.text}",
         "drugAllergies": "${drugAllergyController.text}",
@@ -48,7 +50,8 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
       context,
       MaterialPageRoute(
         builder: (context) {
-          return UserDashboard(FirebaseAuth.instance.currentUser);
+          return UserVerification(widget.uidai, widget.uid);
+          // return UserDashboard(FirebaseAuth.instance.currentUser);
         },
       ),
     );
@@ -187,8 +190,6 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
                             ),
                             keyboardType: TextInputType.name,
                             controller: rtpcrController,
-
-                            onSaved: (val) => formVal.name = val,
                           ),
                         ),
                         SizedBox(height: size.height * 0.05),
@@ -218,8 +219,6 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
                             ),
                             keyboardType: TextInputType.name,
                             controller: drugAllergyController,
-
-                            onSaved: (val) => formVal.fathersname = val,
                           ),
                         ),
                         Divider(

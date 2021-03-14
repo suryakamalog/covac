@@ -45,7 +45,9 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                 .doc("${value.user.uid}")
                 .get()
                 .then((DocumentSnapshot ds) async {
-              isVerified = ds.data()['isVerified'];
+              setState(() {
+                isVerified = ds.data()['isVerified'];
+              });
             });
             print("is this user verified ? " + '$isVerified');
             if (!isVerified)
@@ -230,6 +232,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       key: _scaffoldkey,
       appBar: AppBar(
         leading: GestureDetector(
@@ -312,6 +315,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                         ),
                         GestureDetector(
                           onTap: () {
+                            _verifyPhone();
                             print("Resend the code to the user");
                           },
                           child: Text(

@@ -71,21 +71,21 @@ class _WelcomeState extends State<Welcome> {
                 },
               ),
               // SizedBox(height: size.height * 0.03),
-              RoundedButton(
-                text: "SIGN UP",
-                color: kPrimaryLightColor,
-                textColor: Colors.black,
-                press: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return ContinueWithPhone();
-                      },
-                    ),
-                  );
-                },
-              ),
+              // RoundedButton(
+              //   text: "SIGN UP",
+              //   color: kPrimaryLightColor,
+              //   textColor: Colors.black,
+              //   press: () {
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) {
+              //           return ContinueWithPhone();
+              //         },
+              //       ),
+              //     );
+              //   },
+              // ),
             ],
           ),
         ),

@@ -87,7 +87,7 @@ class _FinishVaccinationProcessState extends State<FinishVaccinationProcess> {
       ),
       appBar: AppBar(
         title: Text(
-          "Vaccinated Users",
+          "Finish Vaccination",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,

@@ -22,38 +22,54 @@ class FillDetailsAadhar extends StatefulWidget {
 class _FillDetailsAadharState extends State<FillDetailsAadhar> {
   final GlobalKey<FormState> _formKeyValue = new GlobalKey<FormState>();
   var selectedType;
-  String _date = "2000-01-01";
+  String _date = "01-01-2000";
   List<String> _genderItems = <String>[
     'Male',
     'Female',
     'Others',
   ];
-  TextEditingController nameController = TextEditingController();
+  TextEditingController aadharController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
   TextEditingController fathersnameController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
+  TextEditingController addressLine1Controller = TextEditingController();
+  TextEditingController addressLine2Controller = TextEditingController();
+  TextEditingController cityController = TextEditingController();
+  TextEditingController stateController = TextEditingController();
   AadharFormVal formVal = new AadharFormVal();
   pressed() {
     print('Do form validation here');
-    print('Name :${nameController.text}');
+    print('Aadhar Number :${aadharController.text}');
+    print('First Name :${firstNameController.text}');
+    print('Last Name :${lastNameController.text}');
     print('Father\'s name :${fathersnameController.text}');
     print('Gender :${formVal.gender}');
     print('DOB :$_date');
-    print('Address :${addressController.text}');
+    print('Address Line 1 :${addressLine1Controller.text}');
+    print('Address Line 2 :${addressLine2Controller.text}');
+    print('City :${cityController.text}');
+    print('State :${stateController.text}');
 
-    FirebaseFirestore.instance.collection("users").doc(widget.uid).set({
-      "name": "${nameController.text}",
+    FirebaseFirestore.instance.collection("users").doc(widget.uid).update({
+      "aadharNumber": "${aadharController.text}",
+      "firstName": "${firstNameController.text}",
+      "lastName": "${lastNameController.text}",
       "fatherName": "${fathersnameController.text}",
       "gender": "${formVal.gender}",
       "DOB": "$_date",
       "uid": "${widget.uid}",
       "role": "public",
-      "address": "${addressController.text}"
+      "addressLine1": "${addressLine1Controller.text}",
+      "addressLine2": "${addressLine2Controller.text}",
+      "city": "${cityController.text}",
+      "state": "${stateController.text}",
+      "mobile": "${widget.phoneNumber}",
     });
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) {
-          return FillDetailsCovidGov(widget.uid);
+          return FillDetailsCovidGov(aadharController.text, widget.uid);
         },
       ),
     );
@@ -65,8 +81,7 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
     super.initState();
     print("in init!!!!");
     FirebaseFirestore.instance.collection("users").doc(widget.uid).set({
-      "mobile": "${widget.phoneNumber}",
-      "isVerified": 0,
+      "isVerified": false,
     });
   }
 
@@ -183,18 +198,75 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
                             cursorColor: kPrimaryColor,
                             decoration: InputDecoration(
                               icon: Icon(
+                                Icons.perm_identity,
+                                color: kPrimaryColor,
+                              ),
+                              // hintText: "Name",
+                              labelText: 'Aadhar Number',
+                              border: InputBorder.none,
+                            ),
+                            keyboardType: TextInputType.number,
+                            controller: aadharController,
+                            validator: (val) => val.isEmpty
+                                ? 'Aadhar Number is required'
+                                : null,
+                            onSaved: (val) => formVal.aadharNumber = val,
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                          width: size.width * 0.8,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFF1E6FF).withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(29),
+                          ),
+                          child: TextFormField(
+                            // onChanged: onChanged,
+                            cursorColor: kPrimaryColor,
+                            decoration: InputDecoration(
+                              icon: Icon(
                                 Icons.person,
                                 color: kPrimaryColor,
                               ),
                               // hintText: "Name",
-                              labelText: 'Name',
+                              labelText: 'First Name',
                               border: InputBorder.none,
                             ),
                             keyboardType: TextInputType.name,
-                            controller: nameController,
+                            controller: firstNameController,
                             validator: (val) =>
-                                val.isEmpty ? 'Name is required' : null,
-                            onSaved: (val) => formVal.name = val,
+                                val.isEmpty ? 'First name is required' : null,
+                            onSaved: (val) => formVal.firstName = val,
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                          width: size.width * 0.8,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFF1E6FF).withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(29),
+                          ),
+                          child: TextFormField(
+                            // onChanged: onChanged,
+                            cursorColor: kPrimaryColor,
+                            decoration: InputDecoration(
+                              icon: Icon(
+                                Icons.person,
+                                color: kPrimaryColor,
+                              ),
+                              // hintText: "Name",
+                              labelText: 'Last Name',
+                              border: InputBorder.none,
+                            ),
+                            keyboardType: TextInputType.name,
+                            controller: lastNameController,
+                            validator: (val) =>
+                                val.isEmpty ? 'Last name is required' : null,
+                            onSaved: (val) => formVal.lastName = val,
                           ),
                         ),
                         Container(
@@ -331,7 +403,7 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
                             borderRadius: BorderRadius.circular(29),
                           ),
                           child: TextFormField(
-                              maxLines: 3,
+                              maxLines: 2,
                               // onChanged: onChanged,
                               cursorColor: kPrimaryColor,
                               decoration: InputDecoration(
@@ -339,21 +411,129 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
                                   Icons.place,
                                   color: kPrimaryColor,
                                 ),
-                                hintText: "Address",
+                                hintText: "Address Line 1",
                                 border: InputBorder.none,
                               ),
-                              keyboardType: TextInputType.name,
-                              controller: addressController,
+                              keyboardType: TextInputType.streetAddress,
+                              controller: addressLine1Controller,
                               validator: (val) =>
                                   val.isEmpty ? 'Address is required' : null,
                               onSaved: (val) {
                                 setState(() {
-                                  formVal.address = val;
+                                  formVal.addressLine1 = val;
                                 });
                               },
                               onChanged: (val) {
                                 setState(() {
-                                  formVal.address = val;
+                                  formVal.addressLine1 = val;
+                                });
+                              }),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                          width: size.width * 0.8,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFF1E6FF).withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(29),
+                          ),
+                          child: TextFormField(
+                              maxLines: 2,
+                              // onChanged: onChanged,
+                              cursorColor: kPrimaryColor,
+                              decoration: InputDecoration(
+                                icon: Icon(
+                                  Icons.place,
+                                  color: kPrimaryColor,
+                                ),
+                                hintText: "Address Line 2",
+                                border: InputBorder.none,
+                              ),
+                              keyboardType: TextInputType.streetAddress,
+                              controller: addressLine2Controller,
+                              validator: (val) =>
+                                  val.isEmpty ? 'Address is required' : null,
+                              onSaved: (val) {
+                                setState(() {
+                                  formVal.addressLine2 = val;
+                                });
+                              },
+                              onChanged: (val) {
+                                setState(() {
+                                  formVal.addressLine2 = val;
+                                });
+                              }),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                          width: size.width * 0.8,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFF1E6FF).withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(29),
+                          ),
+                          child: TextFormField(
+                              maxLines: 1,
+                              // onChanged: onChanged,
+                              cursorColor: kPrimaryColor,
+                              decoration: InputDecoration(
+                                icon: Icon(
+                                  Icons.location_city,
+                                  color: kPrimaryColor,
+                                ),
+                                hintText: "City",
+                                border: InputBorder.none,
+                              ),
+                              keyboardType: TextInputType.streetAddress,
+                              controller: cityController,
+                              validator: (val) =>
+                                  val.isEmpty ? 'City is required' : null,
+                              onSaved: (val) {
+                                setState(() {
+                                  formVal.city = val;
+                                });
+                              },
+                              onChanged: (val) {
+                                setState(() {
+                                  formVal.city = val;
+                                });
+                              }),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                          width: size.width * 0.8,
+                          decoration: BoxDecoration(
+                            color: Color(0xFFF1E6FF).withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(29),
+                          ),
+                          child: TextFormField(
+                              maxLines: 1,
+                              // onChanged: onChanged,
+                              cursorColor: kPrimaryColor,
+                              decoration: InputDecoration(
+                                icon: Icon(
+                                  Icons.place,
+                                  color: kPrimaryColor,
+                                ),
+                                hintText: "State",
+                                border: InputBorder.none,
+                              ),
+                              keyboardType: TextInputType.streetAddress,
+                              controller: stateController,
+                              validator: (val) =>
+                                  val.isEmpty ? 'State is required' : null,
+                              onSaved: (val) {
+                                setState(() {
+                                  formVal.state = val;
+                                });
+                              },
+                              onChanged: (val) {
+                                setState(() {
+                                  formVal.state = val;
                                 });
                               }),
                         ),

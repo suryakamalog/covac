@@ -41,57 +41,59 @@ class _WorkerDashboardState extends State<WorkerDashboard> {
                     // } else
                     // return ListTile(title: Text(list[index]["name"]));
                     return GestureDetector(
-                      onTap: () {
-                        print("Tapped");
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return UserDetailCard(list[index]);
-                              ;
-                            },
-                          ),
-                        );
-                      },
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        elevation: 6.0,
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                'Name: ${list[index]["name"]}',
-                                style: textStyle,
-                              ),
-                              Text(
-                                'Father\'s Name: ${list[index]["fatherName"]}',
-                                style: textStyle,
-                              ),
-                              Text(
-                                'Gender: ${list[index]["gender"]}',
-                                style: textStyle,
-                              ),
-                              Text(
-                                'DOB: ${list[index]["DOB"]}',
-                                style: textStyle,
-                              ),
-                              Text(
-                                'Address: ${list[index]["address"]}',
-                                style: textStyle,
-                              ),
-                              SizedBox(
-                                //Use of SizedBox
-                                height: 10,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
+                        onTap: () {
+                          print("Tapped");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return UserDetailCard(list[index]);
+                                ;
+                              },
+                            ),
+                          );
+                        },
+                        child: list[index]["isVerified"]
+                            ? Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                elevation: 6.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        'Name: ${list[index]["firstName"]} ${list[index]["lastName"]}',
+                                        style: textStyle,
+                                      ),
+                                      Text(
+                                        'Father\'s Name: ${list[index]["fatherName"]}',
+                                        style: textStyle,
+                                      ),
+                                      Text(
+                                        'Gender: ${list[index]["gender"]}',
+                                        style: textStyle,
+                                      ),
+                                      Text(
+                                        'DOB: ${list[index]["DOB"]}',
+                                        style: textStyle,
+                                      ),
+                                      Text(
+                                        'Address: ${list[index]["addressLine1"]}, ${list[index]["addressLine2"]}, ${list[index]["city"]}, ${list[index]["state"]}',
+                                        style: textStyle,
+                                      ),
+                                      SizedBox(
+                                        //Use of SizedBox
+                                        height: 10,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Container());
                   },
                   itemCount: list.length,
                 );

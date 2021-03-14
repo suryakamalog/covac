@@ -1,8 +1,13 @@
 class AadharFormVal {
-  String name;
+  String firstName;
+  String lastName;
   String fathersname;
   String gender;
   String dob;
-  String address;
+  String addressLine1;
+  String addressLine2;
+  String city;
+  String state;
   String email;
+  String aadharNumber;
 }

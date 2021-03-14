@@ -1,5 +1,6 @@
 import 'package:covac/workerView/workerDashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import './userView/UserDashboard.dart';
 import 'welcome.dart';
 import 'utils/constants.dart';
@@ -8,20 +9,31 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 var loggedIn, userID;
+bool isVerified;
 dynamic role;
+
+preprocessing() async {
+  User user = FirebaseAuth.instance.currentUser;
+  if (user != null) {
+    try {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc("${user.uid}")
+          .get()
+          .then((DocumentSnapshot ds) async {
+        role = ds.data()['role'];
+        isVerified = ds.data()['isVerified'];
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  User user = FirebaseAuth.instance.currentUser;
-  if (user != null) {
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc("${user.uid}")
-        .get()
-        .then((DocumentSnapshot ds) async {
-      role = ds.data()['role'];
-    });
-  }
+  preprocessing();
   runApp(MyApp());
 }
 
@@ -37,12 +49,13 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.white,
       ),
       home: Scaffold(
-        body: FirebaseAuth.instance.currentUser == null
-            ? Welcome()
-            : role == "public"
-                ? UserDashboard(FirebaseAuth.instance.currentUser)
-                : WorkerDashboard(FirebaseAuth.instance.currentUser),
-      ),
+          body: FirebaseAuth.instance.currentUser == null
+              ? Welcome()
+              : role == "public" && isVerified == true
+                  ? UserDashboard(FirebaseAuth.instance.currentUser)
+                  : role == "worker" && isVerified == true
+                      ? WorkerDashboard(FirebaseAuth.instance.currentUser)
+                      : Welcome()),
     );
   }
 }

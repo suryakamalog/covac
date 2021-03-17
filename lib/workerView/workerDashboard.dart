@@ -37,10 +37,6 @@ class _WorkerDashboardState extends State<WorkerDashboard> {
 
                 return ListView.builder(
                   itemBuilder: (context, index) {
-                    // if (list[index]["role"] == "worker") {
-                    //   return Container();
-                    // } else
-                    // return ListTile(title: Text(list[index]["name"]));
                     return GestureDetector(
                         onTap: () {
                           print("Tapped");

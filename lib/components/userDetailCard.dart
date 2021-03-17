@@ -4,7 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
+import 'dart:math';
 import '../main.dart';
+import 'package:sms_maintained/sms.dart';
 
 const textStyle = TextStyle(
   fontSize: 16,
@@ -19,6 +21,7 @@ class UserDetailCard extends StatefulWidget {
 
 class _UserDetailCardState extends State<UserDetailCard> {
   String _date = "Choose Date";
+  int sixDigitOTP = 0;
   bool hasVaccinationStarted = false;
   // String _date = DateTime.now();
   String currentWorkerName;
@@ -30,7 +33,7 @@ class _UserDetailCardState extends State<UserDetailCard> {
         .doc("$uid")
         .get()
         .then((DocumentSnapshot ds) async {
-      currentWorkerName = ds.data()['name'];
+      currentWorkerName = ds.data()['firstName'];
     });
   }
 
@@ -54,6 +57,29 @@ class _UserDetailCardState extends State<UserDetailCard> {
     }
   }
 
+  sendOTP() {
+    var rnd = new Random();
+    var next = rnd.nextDouble() * 1000000;
+    while (next < 100000) {
+      next *= 10;
+    }
+    sixDigitOTP = next.toInt();
+    print(sixDigitOTP);
+    SmsSender sender = SmsSender();
+    String address = "+91-8294310526";
+    String text = "OTP for vaccination verification is $sixDigitOTP.";
+
+    SmsMessage message = SmsMessage(address, text);
+    message.onStateChanged.listen((state) {
+      if (state == SmsMessageState.Sent) {
+        print("SMS is sent!");
+      } else if (state == SmsMessageState.Delivered) {
+        print("SMS is delivered!");
+      }
+    });
+    sender.sendSms(message);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -66,10 +92,12 @@ class _UserDetailCardState extends State<UserDetailCard> {
     //input date
     print(_date);
     //send OTP to user phoneNumber
+    sendOTP();
     FirebaseFirestore.instance
         .collection("vaccinatedUsers")
         .doc(widget.particularUser['uid'])
         .set({
+      "uid": widget.particularUser["uid"],
       "userName":
           "${widget.particularUser["firstName"]} ${widget.particularUser["lastName"]}",
       "workerName": "$currentWorkerName",
@@ -77,7 +105,7 @@ class _UserDetailCardState extends State<UserDetailCard> {
       "address":
           "${widget.particularUser["addressLine1"]}, ${widget.particularUser["addressLine2"]}, ${widget.particularUser["city"]}, ${widget.particularUser["state"]}",
       "isVaccinated": false,
-      // "OTP": "$_otp",
+      "OTP": "$sixDigitOTP",
     });
   }
 

@@ -36,10 +36,6 @@ class _VaccinatedUsersListState extends State<VaccinatedUsersList> {
 
                 return ListView.builder(
                   itemBuilder: (context, index) {
-                    // if (list[index]["role"] == "worker") {
-                    //   return Container();
-                    // } else
-                    // return ListTile(title: Text(list[index]["name"]));
                     return GestureDetector(
                       onTap: list[index]["isVaccinated"]
                           ? null
@@ -49,7 +45,8 @@ class _VaccinatedUsersListState extends State<VaccinatedUsersList> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) {
-                                    return FinishVaccinationProcess();
+                                    return FinishVaccinationProcess(
+                                        list[index]["OTP"], list[index]["uid"]);
                                     ;
                                   },
                                 ),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:covac/userView/UserDashboard.dart';
 import 'package:covac/utils/constants.dart';
+import 'package:covac/welcome.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
@@ -81,16 +82,7 @@ class _UserVerificationState extends State<UserVerification> {
     }
   }
 
-  pressed() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) {
-          return UserDashboard(FirebaseAuth.instance.currentUser);
-        },
-      ),
-    );
-  }
+  pressed() {}
 
   start() async {
     await uidaiDataFetch(widget.uidai);
@@ -149,7 +141,7 @@ class _UserVerificationState extends State<UserVerification> {
               child: Center(
               child: Column(
                 children: <Widget>[
-                  Text("You are verified"),
+                  Text("You are verified."),
                   Container(
                     margin: EdgeInsets.symmetric(vertical: 10),
                     width: size.width * 0.8,
@@ -163,7 +155,15 @@ class _UserVerificationState extends State<UserVerification> {
                               vertical: 20, horizontal: 40),
                         ),
                         onPressed: () {
-                          pressed();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return UserDashboard(
+                                    FirebaseAuth.instance.currentUser);
+                              },
+                            ),
+                          );
                         },
                         child: Text(
                           "Go To Dashboard",
@@ -176,7 +176,47 @@ class _UserVerificationState extends State<UserVerification> {
               ),
             ))
           : Container(
-              child: Text("You are not verified"),
+              child: Center(
+                  child: Column(
+                children: <Widget>[
+                  Text(
+                      "Your entered details do not match with UIDAI Database. Please register again with correct details."),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    width: size.width * 0.8,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(29),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          primary: Colors.white,
+                          backgroundColor: kPrimaryColor,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 40),
+                        ),
+                        onPressed: () async {
+                          try {
+                            await FirebaseAuth.instance.signOut();
+                          } catch (e) {
+                            print(e.toString());
+                          }
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return Welcome();
+                              },
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "Go to Login",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              )),
             ),
     );
   }

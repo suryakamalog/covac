@@ -69,7 +69,7 @@ class _UserDashboardState extends State<UserDashboard> {
                       //   style: textStyle,
                       // ),
                       Text(
-                        "Thank you for registering. You are about to get vaccinated for COVID-19. Details of the whole process is given below:-",
+                        "Thank you for registering. You are about to get vaccinated for COVID-19. Detail of the whole process is given below:-",
                         style: textStyle,
                       ),
                       SizedBox(
@@ -100,7 +100,7 @@ class _UserDashboardState extends State<UserDashboard> {
                             context,
                             MaterialPageRoute(
                               builder: (context) {
-                                return ShowOTP();
+                                return ShowOTP(a.data()["OTP"]);
                                 ;
                               },
                             ),

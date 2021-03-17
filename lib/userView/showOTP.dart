@@ -8,6 +8,8 @@ import '../main.dart';
 const textStyle = TextStyle(fontSize: 50, fontWeight: FontWeight.bold);
 
 class ShowOTP extends StatefulWidget {
+  final String OTP;
+  ShowOTP(this.OTP);
   @override
   _ShowOTPState createState() => _ShowOTPState();
 }
@@ -18,7 +20,7 @@ class _ShowOTPState extends State<ShowOTP> {
     return Scaffold(
       body: Align(
         alignment: Alignment.center,
-        child: Text("787576", style: textStyle),
+        child: Text(widget.OTP, style: textStyle),
       ),
       appBar: AppBar(
         title: Text(

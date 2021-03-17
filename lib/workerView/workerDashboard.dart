@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:covac/components/userDetailCard.dart';
+import 'package:covac/faq.dart';
 import 'package:covac/utils/constants.dart';
 import 'package:covac/workerView/vaccinatedUsers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -193,10 +194,18 @@ class _WorkerDashboardState extends State<WorkerDashboard> {
             ListTile(
               title: Text('FAQs'),
               onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return FAQPage();
+                    },
+                  ),
+                );
                 // Update the state of the app
                 // ...
                 // Then close the drawer
-                Navigator.pop(context);
+                // Navigator.pop(context);
               },
             ),
           ],

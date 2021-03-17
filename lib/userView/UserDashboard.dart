@@ -4,6 +4,7 @@ import 'package:covac/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../faq.dart';
 import '../main.dart';
 
 const textStyle = TextStyle(
@@ -225,10 +226,14 @@ class _UserDashboardState extends State<UserDashboard> {
             ListTile(
               title: Text('FAQs'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return FAQPage();
+                    },
+                  ),
+                );
               },
             ),
           ],

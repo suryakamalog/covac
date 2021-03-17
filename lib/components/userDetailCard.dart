@@ -70,12 +70,14 @@ class _UserDetailCardState extends State<UserDetailCard> {
         .collection("vaccinatedUsers")
         .doc(widget.particularUser['uid'])
         .set({
-      "userName": "${widget.particularUser["name"]}",
+      "userName":
+          "${widget.particularUser["firstName"]} ${widget.particularUser["lastName"]}",
       "workerName": "$currentWorkerName",
       "date": "$_date",
-      "address": "${widget.particularUser["address"]}",
+      "address":
+          "${widget.particularUser["addressLine1"]}, ${widget.particularUser["addressLine2"]}, ${widget.particularUser["city"]}, ${widget.particularUser["state"]}",
       "isVaccinated": false,
-      // "OTP": "$_date",
+      // "OTP": "$_otp",
     });
   }
 
@@ -110,7 +112,7 @@ class _UserDetailCardState extends State<UserDetailCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    'Name: ${widget.particularUser["name"]}',
+                    'Name: ${widget.particularUser["firstName"]} ${widget.particularUser["lastName"]}',
                     style: textStyle,
                   ),
                   SizedBox(
@@ -142,7 +144,7 @@ class _UserDetailCardState extends State<UserDetailCard> {
                     height: 10,
                   ),
                   Text(
-                    'Address: ${widget.particularUser["address"]}',
+                    'Address: ${widget.particularUser["addressLine1"]}, ${widget.particularUser["addressLine2"]}, ${widget.particularUser["city"]}, ${widget.particularUser["state"]}',
                     style: textStyle,
                   ),
                   SizedBox(

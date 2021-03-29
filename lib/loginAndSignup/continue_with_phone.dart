@@ -1,5 +1,5 @@
 import 'package:covac/dashboard.dart';
-import 'package:covac/loginAndSignup/verifty_phone.dart';
+import 'package:covac/loginAndSignup/verify_phone.dart';
 import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 import 'fillDetails_Aadhar.dart';

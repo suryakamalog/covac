@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:covac/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
+import 'package:image_picker/image_picker.dart';
 import '../main.dart';
+import 'dart:io';
 
 class FinishVaccinationProcess extends StatefulWidget {
   final String OTP;
@@ -17,11 +19,35 @@ class FinishVaccinationProcess extends StatefulWidget {
 class _FinishVaccinationProcessState extends State<FinishVaccinationProcess> {
   final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
   TextEditingController otpController = TextEditingController();
-
+  File _image;
+  dynamic imageLink;
   bool isVaccinated = false;
+
+  startUpload() async {
+    FirebaseStorage fs = FirebaseStorage.instance;
+
+    Reference rootReference = fs.ref();
+
+    Reference pictureFolderRef = rootReference.child("${widget.uid}");
+
+    pictureFolderRef.putFile(_image).then((storageTask) async {
+      String link = await storageTask.ref.getDownloadURL();
+      print("uploaded");
+      FirebaseFirestore.instance
+          .collection("vaccinatedUsers")
+          .doc(widget.uid)
+          .update({"verificationImage": link});
+
+      setState(() {
+        imageLink = link;
+      });
+    });
+  }
+
   pressed() {
     print(otpController.text);
     if (widget.OTP == otpController.text) {
+      startUpload();
       FirebaseFirestore.instance
           .collection("vaccinatedUsers")
           .doc(widget.uid)
@@ -31,7 +57,8 @@ class _FinishVaccinationProcessState extends State<FinishVaccinationProcess> {
         isVaccinated = true;
       });
     } else {
-      _scaffoldkey.currentState.showSnackBar(SnackBar(content: Text('OTP')));
+      _scaffoldkey.currentState
+          .showSnackBar(SnackBar(content: Text('Invalid OTP')));
     }
   }
 
@@ -41,6 +68,20 @@ class _FinishVaccinationProcessState extends State<FinishVaccinationProcess> {
         .doc(widget.uid)
         .get();
     isVaccinated = a.data()['isVaccinated'];
+  }
+
+  final picker = ImagePicker();
+
+  Future getImage() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
   }
 
   @override
@@ -56,7 +97,7 @@ class _FinishVaccinationProcessState extends State<FinishVaccinationProcess> {
       key: _scaffoldkey,
       body: isVaccinated
           ? Center(
-              child: Text("User had been vaccinated."),
+              child: Text("User has been vaccinated."),
             )
           : Center(
               child: Column(
@@ -97,6 +138,37 @@ class _FinishVaccinationProcessState extends State<FinishVaccinationProcess> {
                       controller: otpController,
                       validator: (val) =>
                           val.isEmpty ? 'OTP is required' : null,
+                    ),
+                  ),
+                  Center(
+                      child: _image == null
+                          ? Text('No image selected.')
+                          : Container(
+                              width: 250.0,
+                              height: 250.0,
+                              child: Image.file(_image),
+                              alignment: Alignment.center,
+                            )),
+                  Container(
+                    margin: EdgeInsets.symmetric(vertical: 10),
+                    width: size.width * 0.8,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(29),
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          primary: Colors.white,
+                          backgroundColor: kPrimaryColor,
+                          padding: EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 40),
+                        ),
+                        onPressed: () {
+                          getImage();
+                        },
+                        child: Text(
+                          "Upload photo for verification",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ),
                   ),
                   Container(

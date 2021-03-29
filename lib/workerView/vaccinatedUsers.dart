@@ -30,7 +30,9 @@ class _VaccinatedUsersListState extends State<VaccinatedUsersList> {
                 AsyncSnapshot<QuerySnapshot> querySnapshot) {
               if (querySnapshot.hasError) return Text("Some Error");
               if (querySnapshot.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
+                return Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    child: Center(child: CircularProgressIndicator()));
               } else {
                 final list = querySnapshot.data.docs;
 

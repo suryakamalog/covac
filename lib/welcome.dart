@@ -1,11 +1,12 @@
 import 'package:covac/loginAndSignup/continue_with_phone.dart';
+import 'package:covac/loginAndSignup/otp.dart';
 import 'package:covac/loginAndSignup/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'components/rounded_button.dart';
 import 'components/rounded_input_field.dart';
 import 'components/rounded_password_field.dart';
-import 'loginAndSignup/verifty_phone.dart';
+import 'loginAndSignup/verify_phone.dart';
 import 'utils/constants.dart';
 import 'dashboard.dart';
 
@@ -61,7 +62,7 @@ class _WelcomeState extends State<Welcome> {
                       context,
                       MaterialPageRoute(
                         builder: (context) {
-                          return VerifyPhone(phoneNumber: phoneNumber);
+                          return OTPScreen(phoneNumber);
                         },
                       ),
                     );

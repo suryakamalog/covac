@@ -23,6 +23,7 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
   final GlobalKey<FormState> _formKeyValue = new GlobalKey<FormState>();
   var selectedType;
   String _date = "01-01-2000";
+  DateTime dobTimestamp;
   List<String> _genderItems = <String>[
     'Male',
     'Female',
@@ -57,6 +58,7 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
       "fatherName": "${fathersnameController.text}",
       "gender": "${formVal.gender}",
       "DOB": "$_date",
+      "DOBTimestamp": "$dobTimestamp",
       "uid": "${widget.uid}",
       "role": "public",
       "addressLine1": "${addressLine1Controller.text}",
@@ -372,6 +374,7 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
                                   print('confirm $date');
 
                                   setState(() {
+                                    dobTimestamp = date;
                                     String year = '$date.toLocal()'
                                         .split(' ')[0]
                                         .split('-')[0];

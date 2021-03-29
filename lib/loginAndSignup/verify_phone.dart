@@ -3,11 +3,9 @@ import 'package:covac/workerView/workerDashboard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../userView/UserDashboard.dart';
-import '../dashboard.dart';
 import '../components/numeric_pad.dart';
 import '../utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class VerifyPhone extends StatefulWidget {
   final String phoneNumber;
@@ -28,18 +26,26 @@ class _VerifyPhoneState extends State<VerifyPhone> {
   Future<void> _submit() async {
     print("IN SUBMIT");
     try {
+      print("in 1st try");
+      print(_verificationCode);
+      print(code);
+
       await FirebaseAuth.instance
           .signInWithCredential(PhoneAuthProvider.credential(
               verificationId: _verificationCode, smsCode: code))
           .then((value) async {
         print(value.user);
         setState(() {
-          currentUser = value.user;
+          if (value.user != null) currentUser = value.user;
         });
+
+        print("in debug!!!!!!!!");
+
         if (value.user != null) {
           print('user uid is --->' + '${value.user.uid}');
 
           try {
+            print("in debug");
             await FirebaseFirestore.instance
                 .collection("users")
                 .doc("${value.user.uid}")
@@ -97,7 +103,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
         }
       });
     } catch (e) {
-      print(e);
+      print("error caught $e");
       print("failed");
       // print(currentUser.uid);
       if (currentUser != null && !isVerified) {
@@ -155,6 +161,7 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                     .doc("${value.user.uid}")
                     .get()
                     .then((DocumentSnapshot ds) async {
+                  print("in debug");
                   isVerified = ds.data()['isVerified'];
                 });
                 print("is this user verified ? " + '$isVerified');
@@ -224,7 +231,6 @@ class _VerifyPhoneState extends State<VerifyPhone> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _verifyPhone();
   }
@@ -372,7 +378,6 @@ class _VerifyPhoneState extends State<VerifyPhone> {
           ),
           NumericPad(
             onNumberSelected: (value) {
-              print(value);
               setState(() {
                 if (value != -1) {
                   if (code.length < 6) {
@@ -381,7 +386,6 @@ class _VerifyPhoneState extends State<VerifyPhone> {
                 } else {
                   code = code.substring(0, code.length - 1);
                 }
-                print(code);
               });
             },
           ),

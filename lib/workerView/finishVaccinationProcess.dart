@@ -4,13 +4,14 @@ import 'package:covac/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sms_maintained/sms.dart';
 import '../main.dart';
 import 'dart:io';
 
 class FinishVaccinationProcess extends StatefulWidget {
-  final String OTP;
   final String uid;
-  FinishVaccinationProcess(this.OTP, this.uid);
+  final String phase;
+  FinishVaccinationProcess(this.uid, this.phase);
   @override
   _FinishVaccinationProcessState createState() =>
       _FinishVaccinationProcessState();
@@ -19,25 +20,69 @@ class FinishVaccinationProcess extends StatefulWidget {
 class _FinishVaccinationProcessState extends State<FinishVaccinationProcess> {
   final GlobalKey<ScaffoldState> _scaffoldkey = GlobalKey<ScaffoldState>();
   TextEditingController otpController = TextEditingController();
+  String otp;
   File _image;
   dynamic imageLink;
   bool isVaccinated = false;
+
+  sendNotification() {
+    SmsSender sender = SmsSender();
+    // String address = "+91-" + widget.particularUser["mobile"].toString();
+    String address = "+91-8294310526";
+    String text = "${widget.phase} Dosage of COVID Vaccine given";
+
+    SmsMessage message = SmsMessage(address, text);
+    message.onStateChanged.listen((state) {
+      if (state == SmsMessageState.Sent) {
+        print("SMS is sent!");
+      } else if (state == SmsMessageState.Delivered) {
+        print("SMS is delivered!");
+      }
+    });
+    sender.sendSms(message);
+  }
+
+  saveToDB() {
+    if (widget.phase == "first")
+      FirebaseFirestore.instance
+          .collection("firstDosage")
+          .doc(widget.uid)
+          .update({
+        "isFirstDosageGiven": true,
+      });
+    else
+      FirebaseFirestore.instance
+          .collection("secondDosage")
+          .doc(widget.uid)
+          .update({
+        "isSecondDosageGiven": false,
+      });
+  }
 
   startUpload() async {
     FirebaseStorage fs = FirebaseStorage.instance;
 
     Reference rootReference = fs.ref();
-
-    Reference pictureFolderRef = rootReference.child("${widget.uid}");
+    Reference pictureFolderRef;
+    if (widget.phase == "first")
+      pictureFolderRef = rootReference.child("${widget.uid}first");
+    else
+      pictureFolderRef = rootReference.child("${widget.uid}second");
 
     pictureFolderRef.putFile(_image).then((storageTask) async {
       String link = await storageTask.ref.getDownloadURL();
       print("uploaded");
-      FirebaseFirestore.instance
-          .collection("vaccinatedUsers")
-          .doc(widget.uid)
-          .update({"verificationImage": link});
 
+      if (widget.phase == "first") {
+        FirebaseFirestore.instance
+            .collection("firstDosage")
+            .doc(widget.uid)
+            .update({"verificationImage": link});
+      } else
+        FirebaseFirestore.instance
+            .collection("secondDosage")
+            .doc(widget.uid)
+            .update({"verificationImage": link});
       setState(() {
         imageLink = link;
       });
@@ -45,29 +90,62 @@ class _FinishVaccinationProcessState extends State<FinishVaccinationProcess> {
   }
 
   pressed() {
+    print(otp);
     print(otpController.text);
-    if (widget.OTP == otpController.text) {
+    if (otp == otpController.text) {
       startUpload();
-      FirebaseFirestore.instance
-          .collection("vaccinatedUsers")
-          .doc(widget.uid)
-          .update({"isVaccinated": true});
+      if (widget.phase == "first") {
+        FirebaseFirestore.instance
+            .collection("vaccinatedUsers")
+            .doc(widget.uid)
+            .update({"isFirstDosageGiven": true});
 
-      setState(() {
-        isVaccinated = true;
-      });
+        setState(() {
+          isVaccinated = true;
+        });
+      } else {
+        FirebaseFirestore.instance
+            .collection("vaccinatedUsers")
+            .doc(widget.uid)
+            .update({"isSecondDosageGiven": true});
+
+        setState(() {
+          isVaccinated = true;
+        });
+      }
+
+      saveToDB();
+      // Send sms to vaccinated user
+
+      sendNotification();
     } else {
       _scaffoldkey.currentState
           .showSnackBar(SnackBar(content: Text('Invalid OTP')));
     }
   }
 
-  checkIfVaccinated() async {
-    var a = await FirebaseFirestore.instance
-        .collection("vaccinatedUsers")
-        .doc(widget.uid)
-        .get();
-    isVaccinated = a.data()['isVaccinated'];
+  // checkIfVaccinated() async {
+  //   var a = await FirebaseFirestore.instance
+  //       .collection("vaccinatedUsers")
+  //       .doc(widget.uid)
+  //       .get();
+  //   isVaccinated = a.data()['isVaccinated'];
+  // }
+
+  getOTPfromDB() async {
+    if (widget.phase == "first") {
+      var a = await FirebaseFirestore.instance
+          .collection("firstDosage")
+          .doc(widget.uid)
+          .get();
+      otp = a.data()['OTP'];
+    } else {
+      var a = await FirebaseFirestore.instance
+          .collection("secondDosage")
+          .doc(widget.uid)
+          .get();
+      otp = a.data()['OTP'];
+    }
   }
 
   final picker = ImagePicker();
@@ -87,7 +165,8 @@ class _FinishVaccinationProcessState extends State<FinishVaccinationProcess> {
   @override
   void initState() {
     super.initState();
-    checkIfVaccinated();
+    // checkIfVaccinated();
+    getOTPfromDB();
   }
 
   @override

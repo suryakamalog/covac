@@ -21,8 +21,12 @@ class UserDetailCard extends StatefulWidget {
 
 class _UserDetailCardState extends State<UserDetailCard> {
   String _date = "Choose Date";
+  String firstJabDate = "Choose Date";
+  String secondJabDate = "Choose Date";
   int sixDigitOTP = 0;
-  bool hasVaccinationStarted = false;
+  // bool hasVaccinationStarted = false;
+  bool isFirstDosageGiven = false;
+  bool isSecondDosageGiven = false;
   // String _date = DateTime.now();
   String currentWorkerName;
   getName(dynamic uid) async {
@@ -37,24 +41,59 @@ class _UserDetailCardState extends State<UserDetailCard> {
     });
   }
 
-  checkIfVaccinationHasStarted(dynamic uid) async {
-    print("inside check");
-    var a = await FirebaseFirestore.instance
+  // checkIfVaccinationHasStarted(dynamic uid) async {
+  //   print("inside check");
+  //   var a = await FirebaseFirestore.instance
+  //       .collection("vaccinatedUsers")
+  //       .doc("$uid")
+  //       .get();
+  //   if (a.exists) {
+  //     print("inside check ------true");
+  //     setState(() {
+  //       hasVaccinationStarted = true;
+  //     });
+  //   }
+  //   if (!a.exists) {
+  //     print("inside check ------false");
+  //     setState(() {
+  //       hasVaccinationStarted = false;
+  //     });
+  //   }
+  // }
+
+  getDosageDate(dynamic uid) async {
+    await FirebaseFirestore.instance
+        .collection("firstDosage")
+        .doc("$uid")
+        .get()
+        .then((DocumentSnapshot ds) async {
+      setState(() {
+        firstJabDate = ds.data()['date'];
+      });
+    }).catchError((onError) {});
+
+    await FirebaseFirestore.instance
+        .collection("secondDosage")
+        .doc("$uid")
+        .get()
+        .then((DocumentSnapshot ds) async {
+      setState(() {
+        secondJabDate = ds.data()['date'];
+      });
+    }).catchError((onError) {});
+  }
+
+  checkIfFirstDosageGiven(dynamic uid) async {
+    await FirebaseFirestore.instance
         .collection("vaccinatedUsers")
         .doc("$uid")
-        .get();
-    if (a.exists) {
-      print("inside check ------true");
+        .get()
+        .then((DocumentSnapshot ds) async {
       setState(() {
-        hasVaccinationStarted = true;
+        isFirstDosageGiven = ds.data()['isFirstDosageGiven'];
+        isSecondDosageGiven = ds.data()['isSecondDosageGiven'];
       });
-    }
-    if (!a.exists) {
-      print("inside check ------false");
-      setState(() {
-        hasVaccinationStarted = false;
-      });
-    }
+    }).catchError((onError) {});
   }
 
   sendOTP() {
@@ -65,7 +104,9 @@ class _UserDetailCardState extends State<UserDetailCard> {
     }
     sixDigitOTP = next.toInt();
     print(sixDigitOTP);
+
     SmsSender sender = SmsSender();
+    // String address = "+91-" + widget.particularUser["mobile"].toString();
     String address = "+91-8294310526";
     String text = "OTP for vaccination verification is $sixDigitOTP.";
 
@@ -84,28 +125,63 @@ class _UserDetailCardState extends State<UserDetailCard> {
   void initState() {
     super.initState();
     getName(FirebaseAuth.instance.currentUser.uid);
-    checkIfVaccinationHasStarted(widget.particularUser['uid']);
+    // checkIfVaccinationHasStarted(widget.particularUser['uid']);
+    checkIfFirstDosageGiven(widget.particularUser['uid']);
+
+    getDosageDate(widget.particularUser['uid']);
   }
 
   gotoMap() {}
-  startVaccination() {
+  startFirstVaccination() {
     //input date
-    print(_date);
+    print(firstJabDate);
     //send OTP to user phoneNumber
     sendOTP();
     FirebaseFirestore.instance
         .collection("vaccinatedUsers")
         .doc(widget.particularUser['uid'])
         .set({
+      "mobile": widget.particularUser["mobile"],
+      "uid": widget.particularUser["uid"],
+      "userName":
+          "${widget.particularUser["firstName"]} ${widget.particularUser["lastName"]}",
+      "isFirstDosageGiven": false,
+      "isSecondDosageGiven": false,
+    });
+
+    FirebaseFirestore.instance
+        .collection("firstDosage")
+        .doc(widget.particularUser['uid'])
+        .set({
+      "mobile": widget.particularUser["mobile"],
       "uid": widget.particularUser["uid"],
       "userName":
           "${widget.particularUser["firstName"]} ${widget.particularUser["lastName"]}",
       "workerName": "$currentWorkerName",
-      "date": "$_date",
+      "date": "$firstJabDate",
       "address":
           "${widget.particularUser["addressLine1"]}, ${widget.particularUser["addressLine2"]}, ${widget.particularUser["city"]}, ${widget.particularUser["state"]}",
-      "isVaccinated": false,
       "OTP": "$sixDigitOTP",
+      "isFirstDosageGiven": true,
+    });
+  }
+
+  startSecondVaccination() {
+    sendOTP();
+    FirebaseFirestore.instance
+        .collection("secondDosage")
+        .doc(widget.particularUser['uid'])
+        .set({
+      "mobile": widget.particularUser["mobile"],
+      "uid": widget.particularUser["uid"],
+      "userName":
+          "${widget.particularUser["firstName"]} ${widget.particularUser["lastName"]}",
+      "workerName": "$currentWorkerName",
+      "date": "$secondJabDate",
+      "address":
+          "${widget.particularUser["addressLine1"]}, ${widget.particularUser["addressLine2"]}, ${widget.particularUser["city"]}, ${widget.particularUser["state"]}",
+      "OTP": "$sixDigitOTP",
+      "isSecondDosageGiven": false,
     });
   }
 
@@ -209,47 +285,140 @@ class _UserDetailCardState extends State<UserDetailCard> {
                         onPressed: gotoMap,
                         child: Text("See Address on Map"),
                       ),
-                      ElevatedButton(
-                        onPressed: hasVaccinationStarted
-                            ? null
-                            : () {
-                                DatePicker.showDatePicker(context,
-                                    showTitleActions: true,
-                                    minTime: DateTime.now(),
-                                    maxTime: DateTime(2023, 1, 1),
-                                    onChanged: (date) {
-                                  // print('change $date');
-                                }, onConfirm: (date) {
-                                  print('confirm $date');
+                      // ElevatedButton(
+                      //   onPressed: isFirstDosageGiven
+                      //       ? null
+                      //       : () {
+                      //           setState(() {
+                      //             isFirstDosageGiven = true;
+                      //           });
+                      //         },
+                      //   child: isFirstDosageGiven
+                      //       ? Text("Vaccination Process Started")
+                      //       : Text("Start Vaccination Process"),
+                      //   style: ElevatedButton.styleFrom(
+                      //     primary: kPrimaryColor, // background
+                      //     onPrimary: Colors.white, // foreground
+                      //   ),
+                      // ),
+                      SizedBox(
+                        //Use of SizedBox
+                        height: 20,
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Text(
+                            "First Jab",
+                            style: textStyle,
+                          ),
+                          ElevatedButton(
+                            onPressed: isFirstDosageGiven
+                                ? null
+                                : () {
+                                    DatePicker.showDatePicker(context,
+                                        showTitleActions: true,
+                                        minTime: DateTime.now(),
+                                        maxTime: DateTime(2023, 1, 1),
+                                        onChanged: (date) {
+                                      // print('change $date');
+                                    }, onConfirm: (date) {
+                                      print('confirm $date');
 
-                                  setState(() {
-                                    String year = '$date.toLocal()'
-                                        .split(' ')[0]
-                                        .split('-')[0];
-                                    String month = '$date.toLocal()'
-                                        .split(' ')[0]
-                                        .split('-')[1];
-                                    String day = '$date.toLocal()'
-                                        .split(' ')[0]
-                                        .split('-')[2];
+                                      setState(() {
+                                        String year = '$date.toLocal()'
+                                            .split(' ')[0]
+                                            .split('-')[0];
+                                        String month = '$date.toLocal()'
+                                            .split(' ')[0]
+                                            .split('-')[1];
+                                        String day = '$date.toLocal()'
+                                            .split(' ')[0]
+                                            .split('-')[2];
 
-                                    _date = day + '-' + month + '-' + year;
-                                    print(_date);
-                                    checkIfVaccinationHasStarted(
-                                        widget.particularUser['uid']);
-                                  });
-                                  startVaccination();
-                                },
-                                    currentTime: DateTime.now(),
-                                    locale: LocaleType.en);
-                              },
-                        child: hasVaccinationStarted
-                            ? Text("Vaccination Process Started")
-                            : Text("Start Vaccination Process"),
-                        style: ElevatedButton.styleFrom(
-                          primary: kPrimaryColor, // background
-                          onPrimary: Colors.white, // foreground
-                        ),
+                                        firstJabDate =
+                                            day + '-' + month + '-' + year;
+                                        print(firstJabDate);
+                                        // checkIfVaccinationHasStarted(
+                                        //     widget.particularUser['uid']);
+                                      });
+                                      startFirstVaccination();
+                                    },
+                                        currentTime: DateTime.now(),
+                                        locale: LocaleType.en);
+                                  },
+                            child: isFirstDosageGiven
+                                ? Text("Date Selected")
+                                : Text("Select Date"),
+                            style: ElevatedButton.styleFrom(
+                              primary: kPrimaryColor, // background
+                              onPrimary: Colors.white, // foreground
+                            ),
+                          ),
+                          Text(
+                            "$firstJabDate",
+                            style: textStyle,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        //Use of SizedBox
+                        height: 20,
+                      ),
+                      Row(
+                        children: <Widget>[
+                          Text(
+                            "Second Jab",
+                            style: textStyle,
+                          ),
+                          ElevatedButton(
+                            onPressed:
+                                !isFirstDosageGiven || isSecondDosageGiven
+                                    ? null
+                                    : () {
+                                        DatePicker.showDatePicker(context,
+                                            showTitleActions: true,
+                                            minTime: DateTime.now(),
+                                            maxTime: DateTime(2023, 1, 1),
+                                            onChanged: (date) {
+                                          // print('change $date');
+                                        }, onConfirm: (date) {
+                                          print('confirm $date');
+
+                                          setState(() {
+                                            String year = '$date.toLocal()'
+                                                .split(' ')[0]
+                                                .split('-')[0];
+                                            String month = '$date.toLocal()'
+                                                .split(' ')[0]
+                                                .split('-')[1];
+                                            String day = '$date.toLocal()'
+                                                .split(' ')[0]
+                                                .split('-')[2];
+
+                                            secondJabDate =
+                                                day + '-' + month + '-' + year;
+                                            print(secondJabDate);
+                                            // checkIfVaccinationHasStarted(
+                                            //     widget.particularUser['uid']);
+                                          });
+                                          startSecondVaccination();
+                                        },
+                                            currentTime: DateTime.now(),
+                                            locale: LocaleType.en);
+                                      },
+                            child: !isFirstDosageGiven || isSecondDosageGiven
+                                ? Text("Date Selected")
+                                : Text("Select Date"),
+                            style: ElevatedButton.styleFrom(
+                              primary: kPrimaryColor, // background
+                              onPrimary: Colors.white, // foreground
+                            ),
+                          ),
+                          Text(
+                            "$secondJabDate",
+                            style: textStyle,
+                          ),
+                        ],
                       ),
                     ]),
                   )

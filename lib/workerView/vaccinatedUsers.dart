@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:covac/components/userDetailCard.dart';
 import 'package:covac/utils/constants.dart';
+import 'package:covac/workerView/dosagePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -39,21 +40,20 @@ class _VaccinatedUsersListState extends State<VaccinatedUsersList> {
                 return ListView.builder(
                   itemBuilder: (context, index) {
                     return GestureDetector(
-                      onTap: list[index]["isVaccinated"]
-                          ? null
-                          : () {
-                              print("Tapped");
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return FinishVaccinationProcess(
-                                        list[index]["OTP"], list[index]["uid"]);
-                                    ;
-                                  },
-                                ),
-                              );
+                      onTap: () {
+                        print("Tapped");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return DosagePage(
+                                  list[index]["mobile"], list[index]["uid"]);
+                              // FinishVaccinationProcess(
+                              //     list[index]["OTP"], list[index]["uid"]);
                             },
+                          ),
+                        );
+                      },
                       child: Card(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)),
@@ -68,22 +68,22 @@ class _VaccinatedUsersListState extends State<VaccinatedUsersList> {
                                 'User Name: ${list[index]["userName"]}',
                                 style: textStyle,
                               ),
-                              Text(
-                                'Worker Name: ${list[index]["workerName"]}',
-                                style: textStyle,
-                              ),
-                              Text(
-                                'Date: ${list[index]["date"]}',
-                                style: textStyle,
-                              ),
-                              Text(
-                                'Address: ${list[index]["address"]}',
-                                style: textStyle,
-                              ),
-                              Text(
-                                'isVaccinated: ${list[index]["isVaccinated"]}',
-                                style: textStyle,
-                              ),
+                              // Text(
+                              //   'Worker Name: ${list[index]["workerName"]}',
+                              //   style: textStyle,
+                              // ),
+                              // Text(
+                              //   'Date: ${list[index]["date"]}',
+                              //   style: textStyle,
+                              // ),
+                              // Text(
+                              //   'Address: ${list[index]["address"]}',
+                              //   style: textStyle,
+                              // ),
+                              // Text(
+                              //   'isVaccinated: ${list[index]["isVaccinated"]}',
+                              //   style: textStyle,
+                              // ),
                               SizedBox(
                                 //Use of SizedBox
                                 height: 10,

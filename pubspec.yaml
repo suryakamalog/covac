@@ -38,6 +38,7 @@ dependencies:
   http: ^0.13.0
   firebase_storage: ^8.0.1
   pinput: ^1.2.0
+  random_string:
 dev_dependencies:
   flutter_test:
     sdk: flutter

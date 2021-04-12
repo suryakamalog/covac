@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:covac/userView/showOTP.dart';
 import 'package:covac/userView/userVaccinationDetails.dart';
 import 'package:covac/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../chatScreen.dart';
 import '../faq.dart';
 import '../main.dart';
 
@@ -182,10 +182,14 @@ class _UserDashboardState extends State<UserDashboard> {
             ListTile(
               title: Text('Chat'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return ChatScreen('', widget.user.uid, 'public');
+                    },
+                  ),
+                );
               },
             ),
             ListTile(

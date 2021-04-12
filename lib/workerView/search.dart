@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:covac/components/userDetailCard.dart';
+import 'package:covac/workerView/userDetailCard.dart';
 import 'package:flutter/material.dart';
 
 class SearchResultWidget extends StatefulWidget {

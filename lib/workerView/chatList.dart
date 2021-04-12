@@ -1,23 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:covac/workerView/userDetailCard.dart';
 import 'package:covac/utils/constants.dart';
-import 'package:covac/workerView/dosagePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../chatScreen.dart';
 import '../main.dart';
-import 'finishVaccinationProcess.dart';
 
 const textStyle = TextStyle(
   fontSize: 16,
 );
 
-class VaccinatedUsersList extends StatefulWidget {
+class ChatList extends StatefulWidget {
+  final dynamic uid;
+  ChatList(this.uid);
   @override
-  _VaccinatedUsersListState createState() => _VaccinatedUsersListState();
+  _ChatListState createState() => _ChatListState();
 }
 
-class _VaccinatedUsersListState extends State<VaccinatedUsersList> {
+class _ChatListState extends State<ChatList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,10 +46,8 @@ class _VaccinatedUsersListState extends State<VaccinatedUsersList> {
                           context,
                           MaterialPageRoute(
                             builder: (context) {
-                              return DosagePage(
-                                  list[index]["mobile"], list[index]["uid"]);
-                              // FinishVaccinationProcess(
-                              //     list[index]["OTP"], list[index]["uid"]);
+                              return ChatScreen(
+                                  widget.uid, list[index]["uid"], 'worker');
                             },
                           ),
                         );

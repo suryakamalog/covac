@@ -1,48 +1,27 @@
-import 'package:covac/components/rounded_input_field.dart';
-import 'package:covac/components/text_field_container.dart';
-import 'package:covac/dashboard.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:covac/loginAndSignup/userVerification.dart';
-import 'package:covac/loginAndSignup/workerVerification.dart';
 import 'package:covac/utils/constants.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'dart:ui';
-import 'package:covac/models/aadharForm.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../userView/UserDashboard.dart';
-
-class FillDetailsCovidGov extends StatefulWidget {
+class WorkerVerification extends StatefulWidget {
   final dynamic uid;
   final String uidai;
-  FillDetailsCovidGov(this.uidai, this.uid);
+  WorkerVerification(this.uidai, this.uid);
   @override
-  _FillDetailsCovidGovState createState() => _FillDetailsCovidGovState();
+  _WorkerVerificationState createState() => _WorkerVerificationState();
 }
 
-class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
-  final GlobalKey<FormState> _formKeyValue = new GlobalKey<FormState>();
+class _WorkerVerificationState extends State<WorkerVerification> {
+  TextEditingController workerIDController = TextEditingController();
   var selectedType;
   int selectedRadio;
-  TextEditingController rtpcrController = TextEditingController();
-  TextEditingController drugAllergyController = TextEditingController();
-  AadharFormVal formVal = new AadharFormVal();
-  pressed() {
-    print('Do form validation here');
-    print('RTPCR ID :${rtpcrController.text}');
-    print('Drug Allergies :${drugAllergyController.text}');
-    print('Affected with COVID: ');
-    selectedRadio == 1 ? print("Yes") : print("No");
 
+  pressed() {
     try {
       FirebaseFirestore.instance.collection("users").doc(widget.uid).update({
-        // "isVerified": true,
-        "isCovidAffected": selectedRadio == 1 ? true : false,
-        "RTPCR-ID": "${rtpcrController.text}",
-        "drugAllergies": "${drugAllergyController.text}",
+        "workerID": "${workerIDController.text}",
+        "role": "worker",
       });
     } catch (e) {
       print(e.toString());
@@ -51,7 +30,7 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
       context,
       MaterialPageRoute(
         builder: (context) {
-          return WorkerVerification(widget.uidai, widget.uid);
+          return UserVerification(widget.uidai, widget.uid);
           // return UserDashboard(FirebaseAuth.instance.currentUser);
         },
       ),
@@ -77,7 +56,7 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Fill Details for verification",
+          "Worker Verification",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -124,7 +103,7 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
                         child: Column(
                       children: <Widget>[
                         Text(
-                          "Were you affected with COVID?",
+                          "Are you a ASHA/ANM worker?",
                           style: TextStyle(
                               fontSize: 16.0, fontWeight: FontWeight.bold),
                         ),
@@ -161,7 +140,7 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
                           ],
                         ),
                         Text(
-                          "If yes, Please provide RT-PCR Test ID",
+                          "If yes, Please provide Worker ID Number",
                           style: TextStyle(
                               fontSize: 16.0, fontWeight: FontWeight.bold),
                         ),
@@ -186,42 +165,14 @@ class _FillDetailsCovidGovState extends State<FillDetailsCovidGov> {
                                     : Colors.grey,
                               ),
                               // hintText: "Name",
-                              labelText: 'RT-PCR Test ID',
+                              labelText: 'Worker ID',
                               border: InputBorder.none,
                             ),
                             keyboardType: TextInputType.name,
-                            controller: rtpcrController,
+                            controller: workerIDController,
                           ),
                         ),
                         SizedBox(height: size.height * 0.05),
-                        Text(
-                          "Mention any drug allergy you have",
-                          style: TextStyle(
-                              fontSize: 16.0, fontWeight: FontWeight.bold),
-                        ),
-                        Container(
-                          margin: EdgeInsets.symmetric(vertical: 10),
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                          width: size.width * 0.8,
-                          decoration: BoxDecoration(
-                            color: Color(0xFFF1E6FF).withOpacity(0.5),
-                            borderRadius: BorderRadius.circular(29),
-                          ),
-                          child: TextFormField(
-                            // onChanged: onChanged,
-                            cursorColor: kPrimaryColor,
-                            decoration: InputDecoration(
-                              icon: Icon(
-                                Icons.medical_services_rounded,
-                                color: kPrimaryColor,
-                              ),
-                              border: InputBorder.none,
-                            ),
-                            keyboardType: TextInputType.name,
-                            controller: drugAllergyController,
-                          ),
-                        ),
                         Divider(
                           color: Colors.grey,
                           height: 20,

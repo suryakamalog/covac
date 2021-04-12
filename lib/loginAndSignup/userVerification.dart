@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:covac/userView/UserDashboard.dart';
 import 'package:covac/utils/constants.dart';
 import 'package:covac/welcome.dart';
+import 'package:covac/workerView/workerDashboard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
@@ -17,6 +18,7 @@ class UserVerification extends StatefulWidget {
 class _UserVerificationState extends State<UserVerification> {
   var uidaiData, enteredData;
   bool verified = false;
+  String role;
   uidaiDataFetch(String uidai) async {
     await FirebaseFirestore.instance
         .collection("uidaiDB")
@@ -35,6 +37,7 @@ class _UserVerificationState extends State<UserVerification> {
         .get()
         .then((DocumentSnapshot ds) async {
       enteredData = ds;
+      role = ds.data()['role'];
       print(enteredData.data());
     });
   }
@@ -159,8 +162,11 @@ class _UserVerificationState extends State<UserVerification> {
                             context,
                             MaterialPageRoute(
                               builder: (context) {
-                                return UserDashboard(
-                                    FirebaseAuth.instance.currentUser);
+                                return role == 'public'
+                                    ? UserDashboard(
+                                        FirebaseAuth.instance.currentUser)
+                                    : WorkerDashboard(
+                                        FirebaseAuth.instance.currentUser);
                               },
                             ),
                           );

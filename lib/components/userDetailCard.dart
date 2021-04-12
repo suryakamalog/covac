@@ -162,7 +162,7 @@ class _UserDetailCardState extends State<UserDetailCard> {
       "address":
           "${widget.particularUser["addressLine1"]}, ${widget.particularUser["addressLine2"]}, ${widget.particularUser["city"]}, ${widget.particularUser["state"]}",
       "OTP": "$sixDigitOTP",
-      "isFirstDosageGiven": true,
+      "isFirstDosageGiven": false,
     });
   }
 

@@ -55,7 +55,7 @@ class _FinishVaccinationProcessState extends State<FinishVaccinationProcess> {
           .collection("secondDosage")
           .doc(widget.uid)
           .update({
-        "isSecondDosageGiven": false,
+        "isSecondDosageGiven": true,
       });
   }
 

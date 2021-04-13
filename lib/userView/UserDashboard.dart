@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:covac/userView/userProfile.dart';
 import 'package:covac/userView/userVaccinationDetails.dart';
 import 'package:covac/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +22,7 @@ class UserDashboard extends StatefulWidget {
 
 class _UserDashboardState extends State<UserDashboard> {
   var a;
+  String aadhar, name, mobile, dob, address, gender;
   bool hasVaccinationStarted = false;
   // checkIfVaccinationHasStarted(dynamic uid) async {
   //   print("inside check");
@@ -42,10 +44,32 @@ class _UserDashboardState extends State<UserDashboard> {
   //   }
   // }
 
+  getUserDetails(dynamic uid) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc("$uid")
+        .get()
+        .then((DocumentSnapshot ds) async {
+      aadhar = ds.data()['aadharNumber'];
+      name = ds.data()['firstName'] + " " + ds.data()['lastName'];
+      mobile = ds.data()['mobile'];
+      gender = ds.data()['gender'];
+      dob = ds.data()['DOB'];
+      address = ds.data()['addressLine1'] +
+          ", " +
+          ds.data()['addressLine2'] +
+          ", " +
+          ds.data()['city'] +
+          ", " +
+          ds.data()['state'];
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     // checkIfVaccinationHasStarted(widget.user.uid);
+    getUserDetails(widget.user.uid);
   }
 
   @override
@@ -150,22 +174,21 @@ class _UserDashboardState extends State<UserDashboard> {
             ListTile(
               title: Text('Profile'),
               onTap: () {
-                print(widget.user);
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return ProfilePage(
+                          aadhar, name, mobile, gender, dob, address);
+                    },
+                  ),
+                );
               },
             ),
-            ListTile(
-              title: Text('COVID-19 Details'),
-              onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
+            // ListTile(
+            //   title: Text('COVID-19 Details'),
+            //   onTap: () {},
+            // ),
             ListTile(
               title: Text('Vaccination Details'),
               onTap: () {

@@ -308,8 +308,12 @@ class _UserDetailCardState extends State<UserDetailCard> {
                       Row(
                         children: <Widget>[
                           Text(
-                            "First Jab",
+                            "First Jab:",
                             style: textStyle,
+                          ),
+                          SizedBox(
+                            //Use of SizedBox
+                            width: 10,
                           ),
                           ElevatedButton(
                             onPressed: isFirstDosageGiven
@@ -354,6 +358,10 @@ class _UserDetailCardState extends State<UserDetailCard> {
                               onPrimary: Colors.white, // foreground
                             ),
                           ),
+                          SizedBox(
+                            //Use of SizedBox
+                            width: 10,
+                          ),
                           Text(
                             "$firstJabDate",
                             style: textStyle,
@@ -367,8 +375,12 @@ class _UserDetailCardState extends State<UserDetailCard> {
                       Row(
                         children: <Widget>[
                           Text(
-                            "Second Jab",
+                            "Second Jab:",
                             style: textStyle,
+                          ),
+                          SizedBox(
+                            //Use of SizedBox
+                            width: 10,
                           ),
                           ElevatedButton(
                             onPressed:
@@ -413,6 +425,10 @@ class _UserDetailCardState extends State<UserDetailCard> {
                               primary: kPrimaryColor, // background
                               onPrimary: Colors.white, // foreground
                             ),
+                          ),
+                          SizedBox(
+                            //Use of SizedBox
+                            width: 10,
                           ),
                           Text(
                             "$secondJabDate",

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import '../main.dart';
+import 'main.dart';
 
 class ProfilePage extends StatefulWidget {
   final String aadhar;

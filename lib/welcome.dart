@@ -1,14 +1,8 @@
-import 'package:covac/loginAndSignup/continue_with_phone.dart';
 import 'package:covac/loginAndSignup/otp.dart';
-import 'package:covac/loginAndSignup/signup.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'components/rounded_button.dart';
 import 'components/rounded_input_field.dart';
-import 'components/rounded_password_field.dart';
-import 'loginAndSignup/verify_phone.dart';
-import 'utils/constants.dart';
-import 'dashboard.dart';
 
 class Welcome extends StatefulWidget {
   @override
@@ -71,22 +65,6 @@ class _WelcomeState extends State<Welcome> {
                         SnackBar(content: Text('Invalid Phone Number')));
                 },
               ),
-              // SizedBox(height: size.height * 0.03),
-              // RoundedButton(
-              //   text: "SIGN UP",
-              //   color: kPrimaryLightColor,
-              //   textColor: Colors.black,
-              //   press: () {
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder: (context) {
-              //           return ContinueWithPhone();
-              //         },
-              //       ),
-              //     );
-              //   },
-              // ),
             ],
           ),
         ),

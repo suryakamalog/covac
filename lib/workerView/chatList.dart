@@ -82,10 +82,6 @@ class _ChatListState extends State<ChatList> {
                               //   'isVaccinated: ${list[index]["isVaccinated"]}',
                               //   style: textStyle,
                               // ),
-                              SizedBox(
-                                //Use of SizedBox
-                                height: 10,
-                              ),
                             ],
                           ),
                         ),

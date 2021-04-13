@@ -1,14 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:covac/userView/userProfile.dart';
+import 'package:covac/userProfile.dart';
 import 'package:covac/workerView/chatList.dart';
 import 'package:covac/workerView/userDetailCard.dart';
 import 'package:covac/faq.dart';
 import 'package:covac/utils/constants.dart';
-import 'package:covac/workerView/search.dart';
 import 'package:covac/workerView/vaccinatedUsers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../chatScreen.dart';
 import '../main.dart';
 
 const textStyle = TextStyle(

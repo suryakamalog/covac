@@ -1,19 +1,10 @@
-import 'package:covac/components/rounded_input_field.dart';
-import 'package:covac/components/text_field_container.dart';
-import 'package:covac/dashboard.dart';
-import 'package:covac/loginAndSignup/userVerification.dart';
 import 'package:covac/loginAndSignup/workerVerification.dart';
 import 'package:covac/utils/constants.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'dart:ui';
 import 'package:covac/models/aadharForm.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../userView/UserDashboard.dart';
 
 class FillDetailsCovidGov extends StatefulWidget {
   final dynamic uid;

@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:covac/userView/userProfile.dart';
+import 'package:covac/userProfile.dart';
 import 'package:covac/userView/userVaccinationDetails.dart';
 import 'package:covac/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';

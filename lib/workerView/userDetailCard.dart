@@ -20,6 +20,7 @@ class UserDetailCard extends StatefulWidget {
 }
 
 class _UserDetailCardState extends State<UserDetailCard> {
+  int bothDosageCount, firstDosageCount;
   String _date = "Choose Date";
   String firstJabDate = "Choose Date";
   String secondJabDate = "Choose Date";
@@ -106,8 +107,8 @@ class _UserDetailCardState extends State<UserDetailCard> {
     print(sixDigitOTP);
 
     SmsSender sender = SmsSender();
-    // String address = "+91-" + widget.particularUser["mobile"].toString();
-    String address = "+91-8294310526";
+    String address = "+91-" + widget.particularUser["mobile"].toString();
+    // String address = "+91-8294310526";
     String text = "OTP for vaccination verification is $sixDigitOTP.";
 
     SmsMessage message = SmsMessage(address, text);
@@ -132,7 +133,7 @@ class _UserDetailCardState extends State<UserDetailCard> {
   }
 
   gotoMap() {}
-  startFirstVaccination() {
+  startFirstVaccination() async {
     //input date
     print(firstJabDate);
     //send OTP to user phoneNumber
@@ -164,9 +165,23 @@ class _UserDetailCardState extends State<UserDetailCard> {
       "OTP": "$sixDigitOTP",
       "isFirstDosageGiven": false,
     });
+
+    await FirebaseFirestore.instance
+        .collection("statistics")
+        .doc("firstDosageCount")
+        .get()
+        .then((DocumentSnapshot ds) async {
+      firstDosageCount = ds.data()['count'];
+    });
+    await FirebaseFirestore.instance
+        .collection("statistics")
+        .doc("firstDosageCount")
+        .update({
+      "count": firstDosageCount + 1,
+    });
   }
 
-  startSecondVaccination() {
+  startSecondVaccination() async {
     sendOTP();
     FirebaseFirestore.instance
         .collection("secondDosage")
@@ -182,6 +197,20 @@ class _UserDetailCardState extends State<UserDetailCard> {
           "${widget.particularUser["addressLine1"]}, ${widget.particularUser["addressLine2"]}, ${widget.particularUser["city"]}, ${widget.particularUser["state"]}",
       "OTP": "$sixDigitOTP",
       "isSecondDosageGiven": false,
+    });
+
+    await FirebaseFirestore.instance
+        .collection("statistics")
+        .doc("bothDosageCount")
+        .get()
+        .then((DocumentSnapshot ds) async {
+      bothDosageCount = ds.data()['count'];
+    });
+    await FirebaseFirestore.instance
+        .collection("statistics")
+        .doc("bothDosageCount")
+        .update({
+      "count": bothDosageCount + 1,
     });
   }
 

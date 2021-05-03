@@ -1,0 +1,324 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:covac/higherAuthorityView/statistics.dart';
+import 'package:covac/utils/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+
+import '../faq.dart';
+import '../main.dart';
+
+const textStyle = TextStyle(
+  fontSize: 16,
+);
+bool isSearching;
+
+class HigherAuthorityDashboard extends StatefulWidget {
+  final User user;
+  HigherAuthorityDashboard(this.user);
+  @override
+  _HigherAuthorityDashboardState createState() =>
+      _HigherAuthorityDashboardState();
+}
+
+class _HigherAuthorityDashboardState extends State<HigherAuthorityDashboard> {
+  String aadhar, name, mobile, dob, address, gender;
+  TextEditingController _queryController = TextEditingController();
+  String aadharNumber = "";
+  Stream stream, filteredStream;
+  bool sortbyIsCovidAffected = false, sortByDOB = false;
+  clear() {
+    print("Inside clear");
+    _queryController.clear();
+    Stream initialStream = FirebaseFirestore.instance
+        .collection("users")
+        // .where('aadharNumber', isEqualTo: aadharNumber)
+        // .orderBy('lastName')
+        .snapshots();
+    filteredStream = initialStream;
+    setState(() {});
+  }
+
+  getUserDetails(dynamic uid) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc("$uid")
+        .get()
+        .then((DocumentSnapshot ds) async {
+      aadhar = ds.data()['aadharNumber'];
+      name = ds.data()['firstName'] + " " + ds.data()['lastName'];
+      mobile = ds.data()['mobile'];
+      gender = ds.data()['gender'];
+      dob = ds.data()['DOB'];
+      address = ds.data()['addressLine1'] +
+          ", " +
+          ds.data()['addressLine2'] +
+          ", " +
+          ds.data()['city'] +
+          ", " +
+          ds.data()['state'];
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getUserDetails(widget.user.uid);
+    sortbyIsCovidAffected = false;
+    isSearching = false;
+    Stream initialStream =
+        FirebaseFirestore.instance.collection("users").snapshots();
+    setState(() {
+      filteredStream = initialStream;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          "Higher Authority Dashboard",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.exit_to_app,
+              size: 30,
+              color: Colors.white,
+            ),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => MyApp()),
+                  (route) => false);
+            },
+          )
+        ],
+        backgroundColor: kPrimaryColor,
+        elevation: 0,
+        centerTitle: true,
+        textTheme: Theme.of(context).textTheme,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            Container(
+              height: 90.0,
+              child: DrawerHeader(
+                child:
+                    Text('COVID-VDMS', style: TextStyle(color: Colors.white)),
+                decoration: BoxDecoration(
+                  color: kPrimaryColor,
+                ),
+              ),
+            ),
+            ListTile(
+              title: Text('Statistics'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return Statistics();
+                    },
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              title: Text('FAQs'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return FAQPage();
+                    },
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      body: Column(children: <Widget>[
+        Container(
+          margin: EdgeInsets.symmetric(vertical: 5),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+          width: size.width,
+          child: TextFormField(
+            autofocus: false,
+            controller: _queryController,
+            decoration: InputDecoration(
+              icon: Icon(Icons.search),
+              hintText: "Search Aadhar Number",
+              suffixIcon: IconButton(
+                onPressed: () {
+                  print("Inside clear");
+                  _queryController.clear();
+                  Stream initialStream = FirebaseFirestore.instance
+                      .collection("users")
+                      .snapshots();
+                  filteredStream = initialStream;
+                  setState(() {});
+                },
+                icon: Icon(Icons.clear),
+              ),
+            ),
+            onFieldSubmitted: (value) {
+              // _onSearchSubmitted(value);
+              filteredStream = FirebaseFirestore.instance
+                  .collection("users")
+                  .where('aadharNumber', isEqualTo: value)
+                  // .orderBy('lastName')
+                  .snapshots();
+              setState(() {});
+            },
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.symmetric(vertical: 5),
+          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+          width: size.width,
+          // height: 20,
+          child: Row(
+            children: <Widget>[
+              Flexible(
+                child: CheckboxListTile(
+                  title: Text("Is Covid Affected"), //    <-- label
+                  value: sortbyIsCovidAffected,
+
+                  onChanged: (newValue) {
+                    setState(() {
+                      sortbyIsCovidAffected = !sortbyIsCovidAffected;
+                      if (sortbyIsCovidAffected) {
+                        filteredStream = FirebaseFirestore.instance
+                            .collection("users")
+                            .where('isCovidAffected', isEqualTo: true)
+                            // .orderBy('lastName')
+                            .snapshots();
+                      } else {
+                        filteredStream = FirebaseFirestore.instance
+                            .collection("users")
+                            .snapshots();
+                      }
+                    });
+                  },
+                ),
+              ),
+              Flexible(
+                child: CheckboxListTile(
+                  title: Text("Sort by DOB"), //    <-- label
+                  value: sortByDOB,
+
+                  onChanged: (newValue) {
+                    setState(() {
+                      sortByDOB = !sortByDOB;
+                      if (sortByDOB) {
+                        filteredStream = FirebaseFirestore.instance
+                            .collection("users")
+                            .orderBy("DOBTimestamp")
+                            .snapshots();
+                        // setState(() {});
+                      } else {
+                        filteredStream = FirebaseFirestore.instance
+                            .collection("users")
+                            .snapshots();
+                        // setState(() {});
+                      }
+                    });
+                  },
+                ),
+              )
+            ],
+          ),
+        ),
+        Expanded(
+          child: StreamBuilder<QuerySnapshot>(
+            stream: filteredStream,
+            builder: (BuildContext context,
+                AsyncSnapshot<QuerySnapshot> querySnapshot) {
+              if (querySnapshot.hasError) return Text("Some Error");
+              if (querySnapshot.connectionState == ConnectionState.waiting) {
+                return Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    child: Center(child: CircularProgressIndicator()));
+              } else {
+                final list = querySnapshot.data.docs;
+
+                return ListView.builder(
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                        onTap: () {
+                          print("Tapped");
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return null;
+                                ;
+                              },
+                            ),
+                          );
+                        },
+                        child: list[index]["isVerified"]
+                            ? Card(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                elevation: 6.0,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        'Name: ${list[index]["firstName"]} ${list[index]["lastName"]}',
+                                        style: textStyle,
+                                      ),
+                                      Text(
+                                        'Father\'s Name: ${list[index]["fatherName"]}',
+                                        style: textStyle,
+                                      ),
+                                      Text(
+                                        'Gender: ${list[index]["gender"]}',
+                                        style: textStyle,
+                                      ),
+                                      Text(
+                                        'DOB: ${list[index]["DOB"]}',
+                                        style: textStyle,
+                                      ),
+                                      Text(
+                                        'Address: ${list[index]["addressLine1"]}, ${list[index]["addressLine2"]}, ${list[index]["city"]}, ${list[index]["state"]}',
+                                        style: textStyle,
+                                      ),
+                                      SizedBox(
+                                        //Use of SizedBox
+                                        height: 10,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Container());
+                  },
+                  itemCount: list.length,
+                );
+              }
+            },
+          ),
+        ),
+      ]),
+    );
+  }
+}

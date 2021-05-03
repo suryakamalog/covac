@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:covac/higherAuthorityView/higherAuthorityDashboard.dart';
 import 'package:covac/loginAndSignup/fillDetails_Aadhar.dart';
 import 'package:covac/userView/UserDashboard.dart';
 import 'package:covac/workerView/workerDashboard.dart';
@@ -101,7 +102,9 @@ class _OTPScreenState extends State<OTPScreen> {
                                       widget.phone, value.user.uid)
                                   : role == "worker"
                                       ? WorkerDashboard(value.user)
-                                      : UserDashboard(value.user)),
+                                      : role == "higherAuthority"
+                                          ? HigherAuthorityDashboard(value.user)
+                                          : UserDashboard(value.user)),
                           (route) => false);
                     }
                   });
@@ -136,7 +139,9 @@ class _OTPScreenState extends State<OTPScreen> {
                           ? FillDetailsAadhar(widget.phone, value.user.uid)
                           : role == "worker"
                               ? WorkerDashboard(value.user)
-                              : UserDashboard(value.user)),
+                              : role == "higherAuthority"
+                                  ? HigherAuthorityDashboard(value.user)
+                                  : UserDashboard(value.user)),
                   (route) => false);
             }
           });

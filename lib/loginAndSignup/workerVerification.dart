@@ -16,12 +16,27 @@ class _WorkerVerificationState extends State<WorkerVerification> {
   TextEditingController workerIDController = TextEditingController();
   var selectedType;
   int selectedRadio;
-
-  pressed() {
+  int totalWorkersRegistered;
+  pressed() async {
     try {
-      FirebaseFirestore.instance.collection("users").doc(widget.uid).update({
-        "workerID": "${workerIDController.text}",
-        "role": "worker",
+      if (selectedRadio == 1)
+        FirebaseFirestore.instance.collection("users").doc(widget.uid).update({
+          "workerID": "${workerIDController.text}",
+          "role": "worker",
+        });
+
+      await FirebaseFirestore.instance
+          .collection("statistics")
+          .doc("totalWorkersRegistered")
+          .get()
+          .then((DocumentSnapshot ds) async {
+        totalWorkersRegistered = ds.data()['count'];
+      });
+      await FirebaseFirestore.instance
+          .collection("statistics")
+          .doc("totalWorkersRegistered")
+          .update({
+        "count": totalWorkersRegistered + 1,
       });
     } catch (e) {
       print(e.toString());

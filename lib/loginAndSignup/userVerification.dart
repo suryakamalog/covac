@@ -19,6 +19,7 @@ class _UserVerificationState extends State<UserVerification> {
   var uidaiData, enteredData;
   bool verified = false;
   String role;
+  int totalUsersRegistered;
   uidaiDataFetch(String uidai) async {
     await FirebaseFirestore.instance
         .collection("uidaiDB")
@@ -42,7 +43,7 @@ class _UserVerificationState extends State<UserVerification> {
     });
   }
 
-  startVerfication() {
+  startVerfication() async {
     print("in start verification");
     try {
       if (uidaiData.exists && enteredData.exists) {
@@ -68,6 +69,19 @@ class _UserVerificationState extends State<UserVerification> {
                 .doc(widget.uid)
                 .update({
               "isVerified": true,
+            });
+            await FirebaseFirestore.instance
+                .collection("statistics")
+                .doc("totalUsersRegistered")
+                .get()
+                .then((DocumentSnapshot ds) async {
+              totalUsersRegistered = ds.data()['count'];
+            });
+            await FirebaseFirestore.instance
+                .collection("statistics")
+                .doc("totalUsersRegistered")
+                .update({
+              "count": totalUsersRegistered + 1,
             });
           } catch (e) {
             print(e.toString());

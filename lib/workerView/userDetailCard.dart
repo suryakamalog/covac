@@ -3,7 +3,7 @@ import 'package:covac/utils/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:intl/intl.dart';
+import 'package:maps_launcher/maps_launcher.dart';
 import 'dart:math';
 import '../main.dart';
 import 'package:sms_maintained/sms.dart';
@@ -20,6 +20,7 @@ class UserDetailCard extends StatefulWidget {
 }
 
 class _UserDetailCardState extends State<UserDetailCard> {
+  double latitude, longitude;
   int bothDosageCount, firstDosageCount;
   String _date = "Choose Date";
   String firstJabDate = "Choose Date";
@@ -41,26 +42,6 @@ class _UserDetailCardState extends State<UserDetailCard> {
       currentWorkerName = ds.data()['firstName'];
     });
   }
-
-  // checkIfVaccinationHasStarted(dynamic uid) async {
-  //   print("inside check");
-  //   var a = await FirebaseFirestore.instance
-  //       .collection("vaccinatedUsers")
-  //       .doc("$uid")
-  //       .get();
-  //   if (a.exists) {
-  //     print("inside check ------true");
-  //     setState(() {
-  //       hasVaccinationStarted = true;
-  //     });
-  //   }
-  //   if (!a.exists) {
-  //     print("inside check ------false");
-  //     setState(() {
-  //       hasVaccinationStarted = false;
-  //     });
-  //   }
-  // }
 
   getDosageDate(dynamic uid) async {
     await FirebaseFirestore.instance
@@ -132,7 +113,24 @@ class _UserDetailCardState extends State<UserDetailCard> {
     getDosageDate(widget.particularUser['uid']);
   }
 
-  gotoMap() {}
+  getLatLong(dynamic uid) async {
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc("$uid")
+        .get()
+        .then((DocumentSnapshot ds) async {
+      setState(() {
+        latitude = ds.data()['latitude'];
+        longitude = ds.data()['longitude'];
+      });
+    }).catchError((onError) {});
+  }
+
+  gotoMap() async {
+    await getLatLong(widget.particularUser['uid']);
+    MapsLauncher.launchCoordinates(latitude, longitude);
+  }
+
   startFirstVaccination() async {
     //input date
     print(firstJabDate);
@@ -314,22 +312,6 @@ class _UserDetailCardState extends State<UserDetailCard> {
                         onPressed: gotoMap,
                         child: Text("See Address on Map"),
                       ),
-                      // ElevatedButton(
-                      //   onPressed: isFirstDosageGiven
-                      //       ? null
-                      //       : () {
-                      //           setState(() {
-                      //             isFirstDosageGiven = true;
-                      //           });
-                      //         },
-                      //   child: isFirstDosageGiven
-                      //       ? Text("Vaccination Process Started")
-                      //       : Text("Start Vaccination Process"),
-                      //   style: ElevatedButton.styleFrom(
-                      //     primary: kPrimaryColor, // background
-                      //     onPrimary: Colors.white, // foreground
-                      //   ),
-                      // ),
                       SizedBox(
                         //Use of SizedBox
                         height: 20,

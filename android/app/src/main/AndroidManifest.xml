@@ -10,6 +10,8 @@
         android:label="covac"
         android:icon="@mipmap/ic_launcher"
         android:requestLegacyExternalStorage="true">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyDDYOYo4ovKRng3-ecP7P4p5fT0J3_kB6U"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

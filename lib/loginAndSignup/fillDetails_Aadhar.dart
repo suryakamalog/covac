@@ -5,8 +5,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'dart:ui';
 import 'package:covac/models/aadharForm.dart';
-
 import 'fillDetails_Covid_Gov.dart';
+import 'package:covac/map.dart';
 
 class FillDetailsAadhar extends StatefulWidget {
   final String phoneNumber;
@@ -536,6 +536,35 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
                                   formVal.state = val;
                                 });
                               }),
+                        ),
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          width: size.width * 0.8,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(29),
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                primary: Colors.white,
+                                backgroundColor: kPrimaryColor,
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 20, horizontal: 40),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      return MapPage(widget.uid);
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                "Pin your address on Map",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
                         ),
                         Container(
                           margin: EdgeInsets.symmetric(vertical: 10),

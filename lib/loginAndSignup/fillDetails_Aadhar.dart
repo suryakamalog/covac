@@ -6,7 +6,7 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'dart:ui';
 import 'package:covac/models/aadharForm.dart';
 import 'fillDetails_Covid_Gov.dart';
-import 'package:covac/map.dart';
+import 'package:covac/loginAndSignup/map.dart';
 
 class FillDetailsAadhar extends StatefulWidget {
   final String phoneNumber;
@@ -64,6 +64,7 @@ class _FillDetailsAadharState extends State<FillDetailsAadhar> {
       "state": "${stateController.text}",
       "mobile": "${widget.phoneNumber}",
     });
+
     Navigator.push(
       context,
       MaterialPageRoute(

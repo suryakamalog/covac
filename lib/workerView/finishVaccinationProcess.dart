@@ -61,7 +61,6 @@ class _FinishVaccinationProcessState extends State<FinishVaccinationProcess> {
 
   startUpload() async {
     FirebaseStorage fs = FirebaseStorage.instance;
-
     Reference rootReference = fs.ref();
     Reference pictureFolderRef;
     if (widget.phase == "first")
@@ -71,8 +70,6 @@ class _FinishVaccinationProcessState extends State<FinishVaccinationProcess> {
 
     pictureFolderRef.putFile(_image).then((storageTask) async {
       String link = await storageTask.ref.getDownloadURL();
-      print("uploaded");
-
       if (widget.phase == "first") {
         FirebaseFirestore.instance
             .collection("firstDosage")

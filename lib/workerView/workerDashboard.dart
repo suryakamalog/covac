@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:covac/map.dart';
+import 'package:covac/loginAndSignup/map.dart';
 import 'package:covac/userProfile.dart';
 import 'package:covac/workerView/chatList.dart';
 import 'package:covac/workerView/userDetailCard.dart';
